@@ -14,11 +14,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     
-    <!-- Tailwind CSS — async load, Critical CSS inline -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    <script defer>
+    <!-- Tailwind CSS — synchronous load, critical for rendering -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -34,13 +33,11 @@
         }
     </script>
     
-    <!-- Google Fonts: display=swap + preload critical weights -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    <!-- Google Fonts: synchronous load, display=swap prevents FOIT -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     
-    <!-- Font Awesome: preload only used weights subset via loadCSS pattern -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
+    <!-- Font Awesome: synchronous load, critical for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <!-- Local styles (critical, loaded early) -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">

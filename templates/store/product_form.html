@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Редагування товару{% else %}Новий товар{% endif %} | FoxTech
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h3 mb-4">
+                    {% if object %}Редагування товару{% else %}Новий товар{% endif %}
+                </h1>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% include 'partials/form_fields.html' with form=form %}
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">
+                            Зберегти
+                        </button>
+                        <a class="btn btn-outline-secondary" href="{% url 'store:product_list' %}">
+                            Скасувати
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

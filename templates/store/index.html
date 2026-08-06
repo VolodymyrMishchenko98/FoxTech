@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FoxTech — головна{% endblock %}
+
+{% block content %}
+<section class="rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-800 to-orange-600 p-8 text-white shadow-soft lg:p-12">
+    <div class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        <div>
+            <span class="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-medium backdrop-blur-md">Новий сезон техніки</span>
+            <h1 class="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">Преміум-гаджети для роботи, гри та повсякденного життя</h1>
+            <p class="mt-4 max-w-2xl text-lg text-slate-200">Від ноутбуків і смартфонів до аксесуарів — FoxTech допомагає обрати сучасні рішення з найкращим балансом ціни і якості.</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a href="{% url 'store:product_list' %}" class="rounded-2xl bg-white px-5 py-3 font-semibold text-slate-900 transition hover:bg-slate-100">Переглянути каталог</a>
+                <a href="{% url 'accounts:register' %}" class="rounded-2xl border border-white/25 bg-white/10 px-5 py-3 font-semibold text-white backdrop-blur-md transition hover:bg-white/20">Створити акаунт</a>
+            </div>
+        </div>
+        <div class="rounded-[28px] border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-md">
+            <div class="grid gap-3">
+                <div class="rounded-2xl bg-white/15 p-4">
+                    <p class="text-sm text-slate-200">Швидкий старт</p>
+                    <p class="mt-2 text-xl font-semibold">1. Обери категорію</p>
+                </div>
+                <div class="rounded-2xl bg-white/15 p-4">
+                    <p class="text-sm text-slate-200">2. Порівняй характеристики</p>
+                    <p class="mt-2 text-xl font-semibold">3. Замовляй у 1 клік</p>
+                </div>
+                <div class="rounded-2xl bg-orange-500/80 p-4">
+                    <p class="text-sm text-orange-50">Безкоштовна доставка</p>
+                    <p class="mt-2 text-xl font-semibold">від 3 000 грн</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mt-10">
+    <div class="mb-5 flex items-end justify-between">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Категорії</p>
+            <h2 class="mt-2 text-2xl font-semibold text-slate-900">Оберіть свій напрямок</h2>
+        </div>
+        <a href="{% url 'store:product_list' %}" class="text-sm font-medium text-slate-600 transition hover:text-orange-600">Всі товари</a>
+    </div>
+    {% if categories %}
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {% for category in categories %}
+                <a href="{% url 'store:product_list' %}?category={{ category.slug }}" class="group rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-500 hover:shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">{{ category.title }}</h3>
+                            {% if category.description %}
+                                <p class="mt-2 text-sm text-slate-500">{{ category.description|truncatechars:80 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 transition group-hover:bg-orange-600 group-hover:text-white">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="rounded-[24px] border border-dashed border-slate-300 bg-white/70 p-10 text-center shadow-sm">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-50 text-2xl text-orange-600">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="mt-4 text-lg font-semibold text-slate-900">Категорій поки що немає</h3>
+            <p class="mt-2 text-sm text-slate-500">Незабаром тут з’являться нові напрямки техніки.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class="mt-10">
+    <div class="mb-5 flex items-end justify-between">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Новинки</p>
+            <h2 class="mt-2 text-2xl font-semibold text-slate-900">Насичена лінійка нових товарів</h2>
+        </div>
+        <a href="{% url 'store:product_list' %}" class="text-sm font-medium text-slate-600 transition hover:text-orange-600">До каталогу</a>
+    </div>
+    {% if latest_products %}
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {% for product in latest_products %}
+                <article class="group relative overflow-hidden rounded-[24px] border border-slate-300 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                    <div class="absolute left-4 top-4 z-10 rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">Новинка</div>
+                    <div class="relative overflow-hidden bg-slate-100 p-5 ring-1 ring-slate-200">
+                        <div class="relative h-[180px] overflow-hidden rounded-[20px] bg-slate-200 transition duration-300 group-hover:scale-105">
+                            <div class="absolute right-4 top-4 z-10 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-900">В наявності</div>
+                            {% if product.has_valid_image %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" decoding="async" class="block h-full w-full object-cover shadow-sm transition-opacity duration-300">
+                            {% else %}
+                                <div class="flex h-full w-full flex-col items-center justify-center rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-6 text-center">
+                                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-lg ring-1 ring-slate-100">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="4" y="6" width="16" height="13" rx="3" stroke="#64748b" stroke-width="1.8"/>
+                                            <path d="M8 6V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V6" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
+                                            <circle cx="12" cy="12.5" r="3.5" stroke="#94a3b8" stroke-width="1.5"/>
+                                            <circle cx="13.5" cy="11" r="1" fill="#94a3b8"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-slate-800">Зображення не додане</p>
+                                    <p class="mt-1 text-xs text-slate-500">Спробуємо знайти зображення пізніше</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="p-5 bg-slate-50">
+                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-600">{{ product.category.title }}</p>
+                        <h3 class="mt-2 text-xl font-semibold text-slate-900">{{ product.name }}</h3>
+                        <div class="mt-3 flex items-center justify-between gap-4">
+                            <div>
+                                <p class="text-2xl font-semibold text-slate-900">{{ product.price }} грн</p>
+                                <p class="mt-1 text-sm text-slate-600">{{ product.stock_quantity }} шт.</p>
+                            </div>
+                            <a href="{% url 'store:product_detail' product.slug %}" class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-sm transition hover:bg-orange-600">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="rounded-[24px] border border-dashed border-slate-300 bg-white/70 p-10 text-center shadow-sm">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-50 text-2xl text-orange-600">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="mt-4 text-lg font-semibold text-slate-900">Товарів поки що немає</h3>
+            <p class="mt-2 text-sm text-slate-500">Скоро тут з’являться нові позиції.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

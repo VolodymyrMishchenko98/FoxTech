@@ -1,0 +1,271 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}FoxTech{% endblock %}</title>
+    <meta name="description" content="{% block description %}FoxTech — сучасні гаджети, техніка для роботи і відпочинку{% endblock %}">
+    
+    <!-- DNS prefetch + preconnect для CDN -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
+    <!-- Tailwind CSS — async load, Critical CSS inline -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script defer>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accent: '#FF5722',
+                        deep: '#0f172a',
+                    },
+                    boxShadow: {
+                        soft: '0 18px 45px -20px rgba(15,23,42,0.35)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts: display=swap + preload critical weights -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    
+    <!-- Font Awesome: preload only used weights subset via loadCSS pattern -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
+    
+    <!-- Local styles (critical, loaded early) -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <!-- Critical CSS inline for above-the-fold rendering -->
+    <style>
+        /* Prevent FOIT and layout shift */
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            background-color: #f6f8fb;
+            opacity: 1;
+        }
+        header { position: sticky; top: 0; z-index: 40; }
+        main { flex: 1; }
+        
+        /* Smooth page transitions */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        main > * {
+            animation: fadeIn 0.25s ease-out both;
+        }
+        
+        /* Button loading state */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+            pointer-events: none;
+        }
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            left: 50%;
+            top: 50%;
+            margin-left: -9px;
+            margin-top: -9px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Image lazy load fade-in */
+        img { 
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        img[loading="lazy"] {
+            opacity: 0;
+        }
+        img[loading="lazy"].loaded {
+            opacity: 1;
+        }
+    </style>
+    
+    <!-- View Transitions API (progressive enhancement) -->
+    <script>
+        // SPA-like navigation for same-origin links
+        if ('startViewTransition' in document) {
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a[href^="{% url "store:index" %}"], a[href^="/"]');
+                if (!link) return;
+                if (link.target || link.rel === 'external') return;
+                if (link.hasAttribute('download')) return;
+                if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+                
+                e.preventDefault();
+                const url = link.getAttribute('href');
+                
+                document.startViewTransition(() => {
+                    location.href = url;
+                });
+            }, { passive: true });
+        }
+    </script>
+    
+    <!-- Button loading state helper -->
+    <script>
+        // Form submit loading state
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            if (form.id === 'search-form') return; // handled separately
+            const btn = form.querySelector('button[type="submit"]');
+            if (!btn) return;
+            btn.classList.add('btn-loading');
+        });
+        
+        // Search form instant feedback
+        const searchForm = document.getElementById('search-form');
+        if (searchForm) {
+            const searchInput = document.getElementById('search-input');
+            const searchSubmit = document.getElementById('search-submit');
+            if (searchInput && searchSubmit) {
+                searchInput.addEventListener('input', function() {
+                    searchSubmit.style.opacity = this.value.trim() ? '1' : '0.5';
+                });
+                searchForm.addEventListener('submit', function() {
+                    searchSubmit.classList.add('btn-loading');
+                });
+            }
+        }
+        
+        // Lazy load image fade-in
+        if ('IntersectionObserver' in window) {
+            const imgObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.complete) {
+                            img.classList.add('loaded');
+                        } else {
+                            img.addEventListener('load', function() {
+                                img.classList.add('loaded');
+                            });
+                        }
+                        imgObserver.unobserve(img);
+                    }
+                });
+            }, { rootMargin: '100px' });
+            
+            document.querySelectorAll('img[loading="lazy"]').forEach(function(img) {
+                imgObserver.observe(img);
+            });
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800">
+    <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-lg">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8">
+            <a href="{% url 'store:index' %}" class="flex items-center gap-2 text-xl font-extrabold text-slate-900">
+                <img src="{% static 'images/logo.svg' %}" alt="FoxTech Mascot" class="h-14 w-14 object-contain drop-shadow-sm transition-transform hover:scale-110 sm:h-16 sm:w-16">
+                <span>Fox<span class="text-orange-600">Tech</span></span>
+            </a>
+
+            <form action="{% url 'store:product_list' %}" method="get" class="hidden flex-1 items-center rounded-2xl border border-slate-200 bg-slate-100/80 px-3 py-2 shadow-sm md:flex md:max-w-xl lg:mx-10" id="search-form">
+                <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+                <input type="search" name="q" value="{{ search_query|default:'' }}" placeholder="Швидкий пошук по товарах" class="ml-3 w-full border-0 bg-transparent text-sm outline-none" id="search-input">
+                <button type="submit" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-orange-600" id="search-submit">Пошук</button>
+            </form>
+
+            <div class="flex items-center gap-2">
+                <a href="{% url 'store:product_list' %}" class="hidden rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600 lg:inline-flex">Каталог</a>
+                <a href="#" class="hidden rounded-2xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 lg:inline-flex">
+                    Гра <span class="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-xs">Знижка</span>
+                </a>
+                <a href="#" class="relative rounded-2xl border border-slate-200 bg-white p-3 text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-600 text-[10px] font-semibold text-white">0</span>
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}" class="hidden rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600 md:inline-flex">Профіль</a>
+                    <form action="{% url 'accounts:logout' %}" method="post" class="hidden md:block">
+                        {% csrf_token %}
+                        <button type="submit" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Вийти</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Увійти</a>
+                    <a href="{% url 'accounts:register' %}" class="rounded-2xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">Реєстрація</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 lg:px-8 lg:py-8">
+        {% if messages %}
+            <div class="fixed right-4 top-24 z-50 flex flex-col gap-2">
+                {% for message in messages %}
+                    <div class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-xl backdrop-blur-md">
+                        <p class="text-sm font-medium text-slate-700">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="mt-12 border-t border-slate-200 bg-slate-900 text-slate-300">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-12 lg:grid-cols-4 lg:px-8">
+            <div>
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-600 text-white">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-white">FoxTech</p>
+                        <p class="text-xs text-slate-400">Premium electronics</p>
+                    </div>
+                </div>
+                <p class="text-sm leading-6 text-slate-400">Сучасні гаджети, техніка для роботи і відпочинку та преміальні рішення для кожного.</p>
+            </div>
+            <div>
+                <h3 class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-white">Навігація</h3>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li><a href="{% url 'store:index' %}" class="transition hover:text-white">Головна</a></li>
+                    <li><a href="{% url 'store:product_list' %}" class="transition hover:text-white">Каталог</a></li>
+                    <li><a href="{% url 'accounts:register' %}" class="transition hover:text-white">Реєстрація</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-white">Контакти</h3>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li>support@foxtech.ua</li>
+                    <li>+38 (099) 123 45 67</li>
+                    <li>Київ, Україна</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-white">Соцмережі</h3>
+                <div class="flex gap-3 text-slate-400">
+                    <a href="#" class="transition hover:text-white"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="transition hover:text-white"><i class="fa-brands fa-telegram"></i></a>
+                    <a href="#" class="transition hover:text-white"><i class="fa-brands fa-facebook-f"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 px-4 py-4 text-center text-sm text-slate-500">
+            © 2026 FoxTech. Усі права захищені.
+        </div>
+    </footer>
+</body>
+</html>

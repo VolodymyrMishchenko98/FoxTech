@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+    <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="overflow-hidden rounded-[24px] bg-slate-100 p-4">
+            {% if product.has_valid_image %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" fetchpriority="high" decoding="async" class="h-[420px] w-full rounded-[20px] object-cover">
+            {% else %}
+                <div class="flex h-[420px] w-full flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-slate-200 bg-gradient-to-br from-slate-50 via-blue-50/30 to-orange-50/20 px-6 py-8 text-center">
+                    <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 shadow-lg ring-1 ring-slate-100">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="4" y="6" width="16" height="13" rx="3" stroke="#64748b" stroke-width="1.8"/>
+                            <path d="M8 6V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V6" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
+                            <circle cx="12" cy="12.5" r="3.5" stroke="#94a3b8" stroke-width="1.5"/>
+                            <circle cx="13.5" cy="11" r="1" fill="#94a3b8"/>
+                        </svg>
+                    </div>
+                    <p class="text-xl font-semibold text-slate-700">Зображення не додане</p>
+                    <p class="mt-2 text-sm text-slate-500">Додайте фото для кращого перегляду товару</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">{{ product.category.title }}</p>
+        <h1 class="mt-3 text-3xl font-semibold text-slate-900">{{ product.name }}</h1>
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+            {% if product.is_available %}
+                <span class="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">В наявності</span>
+            {% else %}
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">Немає в наявності</span>
+            {% endif %}
+            <span class="text-sm text-slate-500">Артикул: {{ product.slug }}</span>
+        </div>
+
+        <div class="mt-6 rounded-[24px] border border-orange-100 bg-orange-50 p-5">
+            <div class="flex items-end justify-between">
+                <div>
+                    <p class="text-sm text-slate-500">Ціна</p>
+                    <p class="mt-1 text-4xl font-semibold text-slate-900">{{ product.price }} грн</p>
+                </div>
+                <button type="button" class="rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-orange-600">Додати в кошик</button>
+            </div>
+        </div>
+
+        <div class="mt-6 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <p class="text-sm font-semibold text-slate-900">Гарантія</p>
+                <p class="mt-1 text-sm text-slate-500">24 місяці</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <p class="text-sm font-semibold text-slate-900">Доставка</p>
+                <p class="mt-1 text-sm text-slate-500">Надійно по всій Україні</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <p class="text-sm font-semibold text-slate-900">Наявність</p>
+                <p class="mt-1 text-sm text-slate-500">{{ product.stock_quantity }} шт.</p>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold text-slate-900">Опис</h2>
+            <p class="mt-3 leading-7 text-slate-600">{{ product.description|default:'Опис відсутній.' }}</p>
+        </div>
+
+        <div class="mt-8 rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+            <h3 class="text-lg font-semibold text-slate-900">Основні характеристики</h3>
+            <div class="mt-4 space-y-3">
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                        <p class="text-sm text-slate-500">Стан</p>
+                        <p class="mt-2 font-semibold text-slate-900">{{ product.is_available|yesno:'В наявності,Немає в наявності' }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                        <p class="text-sm text-slate-500">Одиниць на складі</p>
+                        <p class="mt-2 font-semibold text-slate-900">{{ product.stock_quantity }}</p>
+                    </div>
+                </div>
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                        <p class="text-sm text-slate-500">Категорія</p>
+                        <p class="mt-2 font-semibold text-slate-900">{{ product.category.title }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                        <p class="text-sm text-slate-500">Артикул</p>
+                        <p class="mt-2 font-semibold text-slate-900">{{ product.slug }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-8 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+    <h2 class="text-xl font-semibold text-slate-900">Технічні характеристики</h2>
+    {% if specs %}
+        <div class="mt-5 overflow-hidden rounded-[20px] border border-slate-200">
+            {% for key, value in specs.items %}
+                <div class="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 last:border-b-0 {% cycle 'bg-white' 'bg-slate-50' %}">
+                    <span class="font-medium text-slate-700">{{ key }}</span>
+                    <span class="text-slate-600">{{ value }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="mt-4 text-sm text-slate-500">Характеристики для цього товару ще не додані.</p>
+    {% endif %}
+</div>
+{% endblock %}

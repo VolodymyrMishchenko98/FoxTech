@@ -1,0 +1,137 @@
+/* Performance Optimizations */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #f6f8fb;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Critical rendering path */
+.card {
+    border-radius: 8px;
+    contain: layout style paint;
+}
+
+.product-card {
+    overflow: hidden;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Image Optimization */
+.product-image,
+.product-detail-image {
+    background-color: #e9eef5;
+    object-fit: cover;
+    display: block;
+    contain: size layout style paint;
+}
+
+.product-image {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    /* Lazy load placeholder */
+    background: linear-gradient(90deg, #e9eef5 25%, #f0f5fa 50%, #e9eef5 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+.product-image.loaded {
+    animation: none;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.product-detail-image {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+}
+
+.product-image-placeholder {
+    align-items: center;
+    color: #5b677a;
+    display: flex;
+    font-weight: 700;
+    justify-content: center;
+    min-height: 300px;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Button Loading States */
+.btn:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner-border {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: text-bottom;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+.spinner-border-sm {
+    width: 0.875em;
+    height: 0.875em;
+    border-width: 0.2em;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+/* Link Transitions */
+a, .btn {
+    transition: all 0.2s ease-out;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/* Form Performance */
+input, select, textarea {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
+}
+
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+form input:not([type="checkbox"]),
+form select,
+form textarea {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    display: block;
+    padding: 0.375rem 0.75rem;
+    width: 100%;
+}
+
+form input[type="checkbox"] {
+    margin-right: 0.5rem;
+}

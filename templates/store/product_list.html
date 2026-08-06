@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Каталог | FoxTech{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Каталог техніки</h1>
+        <p class="text-muted mb-0">Оголошення користувачів FoxTech.</p>
+    </div>
+    <form class="row g-2 align-items-center" method="get">
+        <div class="col-12 col-sm-auto">
+            <input
+                class="form-control"
+                type="search"
+                name="q"
+                value="{{ search_query }}"
+                placeholder="Пошук"
+            >
+        </div>
+        <div class="col-12 col-sm-auto">
+            <select class="form-select" name="category">
+                <option value="">Усі категорії</option>
+                {% for category in categories %}
+                    <option
+                        value="{{ category.slug }}"
+                        {% if category.slug == selected_category %}selected{% endif %}
+                    >
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12 col-sm-auto">
+            <button class="btn btn-outline-primary w-100" type="submit">
+                Знайти
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="row g-4">
+    {% for product in products %}
+        <div class="col-12 col-md-6 col-xl-4">
+            <article class="card h-100 shadow-sm product-card">
+                {% if product.image %}
+                    <img
+                        class="card-img-top product-image"
+                        src="{{ product.image.url }}"
+                        alt="{{ product.title }}"
+                    >
+                {% else %}
+                    <div class="product-image product-image-placeholder">
+                        FoxTech
+                    </div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between gap-2 mb-2">
+                        <span class="badge text-bg-light">
+                            {{ product.category.name }}
+                        </span>
+                        <span class="text-muted small">
+                            {{ product.created_at|date:'d.m.Y' }}
+                        </span>
+                    </div>
+                    <h2 class="h5">{{ product.title }}</h2>
+                    <p class="text-muted flex-grow-1">
+                        {{ product.description|truncatechars:120 }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>{{ product.price }} грн</strong>
+                        <a class="btn btn-primary btn-sm" href="{{ product.get_absolute_url }}">
+                            Деталі
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info mb-0">
+                Товарів за вашим запитом не знайдено.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+    <nav class="mt-4" aria-label="Навігація сторінками">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                        Назад
+                    </a>
+                </li>
+            {% endif %}
+            <li class="page-item active" aria-current="page">
+                <span class="page-link">{{ page_obj.number }}</span>
+            </li>
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                        Далі
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+{% endblock %}

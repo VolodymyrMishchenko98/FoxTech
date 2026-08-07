@@ -6,7 +6,8 @@ services:
     rootDir: .
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn foxtech.wsgi:application --log-file -"
-    releaseCommand: "python manage.py migrate --noinput"
+    releaseCommand: "python manage.py migrate --noinput --verbosity=2"
+    healthCheckPath: /
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.0

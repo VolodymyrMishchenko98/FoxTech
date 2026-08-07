@@ -88,7 +88,8 @@ DATABASES = {
 }
 # Increase SQLite lock timeout to prevent "database is locked" errors
 # when connections briefly contend for the write lock (e.g. admin saves).
-DATABASES['default'].setdefault('OPTIONS', {}).update({'timeout': 20})
+if DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    DATABASES['default'].setdefault('OPTIONS', {}).update({'timeout': 20})
 
 
 # Password validation

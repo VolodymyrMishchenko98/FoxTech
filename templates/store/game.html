@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Лис-ранер — FoxTech{% endblock %}
+
+{% block content %}
+<section class="fox-runner-shell rounded-[32px] border border-slate-200 p-4 shadow-sm md:p-6 lg:p-8">
+    <div class="mx-auto flex max-w-5xl flex-col gap-6">
+        <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+            <div>
+                <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-orange-700">Лис-ранер</span>
+                <h1 class="mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">60 секунд бігу, стрибків і бонусів</h1>
+                <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+                    Лисиця біжить сама, а ви лише підстрибуєте, щоб оминати перешкоди та збирати ягоди.
+                    Раунд триває 60 секунд, очки даються тільки за зібрані бонуси, а результат надсилається на сервер наприкінці гри.
+                </p>
+            </div>
+            <div class="fox-runner-panel rounded-[24px] p-4">
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="rounded-2xl bg-slate-50 px-3 py-3">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Рахунок</p>
+                        <p id="fox-score" class="mt-1 text-2xl font-semibold text-slate-900">0</p>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 px-3 py-3">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Час</p>
+                        <p id="fox-time" class="mt-1 text-2xl font-semibold text-slate-900">60 с</p>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 px-3 py-3">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Токен</p>
+                        <p id="fox-client-token" class="mt-1 truncate text-sm font-semibold text-slate-900">готово</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mx-auto w-full max-w-[800px]">
+            <div class="relative overflow-hidden rounded-[28px] fox-runner-panel p-3 md:p-4">
+                <div class="pointer-events-none absolute inset-x-6 top-6 z-10 flex flex-wrap gap-2">
+                    <span class="fox-runner-pill rounded-full px-3 py-1 text-xs font-semibold">Пробіл / ↑ — стрибок</span>
+                    <span class="fox-runner-pill rounded-full px-3 py-1 text-xs font-semibold">Торкніться екрана на мобільному</span>
+                </div>
+
+                <div class="relative mx-auto w-full" style="aspect-ratio: 16 / 9; max-width: 800px;">
+                    <canvas id="fox-runner" width="800" height="450" class="fox-runner-canvas block h-full w-full" data-submit-url="/api/game/submit-score/"></canvas>
+
+                    <div id="fox-runner-overlay" class="pointer-events-none absolute inset-0 flex items-center justify-center p-6 opacity-0 transition duration-300">
+                        <div class="max-w-md rounded-[24px] border border-slate-200 bg-white/95 p-6 text-center shadow-2xl backdrop-blur-md">
+                            <p id="fox-runner-overlay-title" class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Раунд завершено</p>
+                            <h2 id="fox-runner-overlay-main" class="mt-3 text-2xl font-semibold text-slate-900">Надсилаємо рахунок...</h2>
+                            <p id="fox-runner-overlay-text" class="mt-3 text-sm leading-6 text-slate-600">Результат піде на сервер. Нагорода з’явиться лише після відповіді.</p>
+                            <div class="mt-5 grid grid-cols-2 gap-3 text-left">
+                                <div class="rounded-2xl bg-slate-50 p-4">
+                                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Фінальний рахунок</p>
+                                    <p id="fox-runner-final-score" class="mt-1 text-2xl font-semibold text-slate-900">0</p>
+                                </div>
+                                <div class="rounded-2xl bg-orange-50 p-4">
+                                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-700">Нагорода</p>
+                                    <p id="fox-runner-reward" class="mt-1 text-lg font-semibold text-orange-700">Очікування...</p>
+                                </div>
+                            </div>
+                            <button type="button" id="fox-runner-restart" class="pointer-events-auto mt-5 inline-flex rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60">
+                                Грати ще раз
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mx-auto grid w-full max-w-[800px] gap-4 lg:grid-cols-[1fr_280px]">
+            <aside class="fox-runner-panel rounded-[28px] p-5">
+                <h2 class="text-lg font-semibold text-slate-900">Як грати</h2>
+                <ul class="mt-4 space-y-3 text-sm leading-6 text-slate-600">
+                    <li>• Лисиця біжить сама, вам потрібен лише стрибок.</li>
+                    <li>• Ягоди дають очки, перешкоди завершують раунд одразу.</li>
+                    <li>• Через 60 секунд гра завершиться та надішле рахунок на сервер.</li>
+                    <li>• Промокод з’явиться лише після відповіді `/api/game/submit-score/`.</li>
+                </ul>
+                <div class="mt-5 rounded-2xl bg-slate-50 p-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Керування на мобільному</p>
+                    <button type="button" id="fox-runner-jump" class="mt-3 w-full rounded-2xl bg-orange-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">
+                        Стрибок
+                    </button>
+                </div>
+                <p id="fox-runner-status" class="mt-5 text-sm text-slate-500">Гра готова до старту.</p>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<script src="{% static 'js/game.js' %}"></script>
+{% endblock %}

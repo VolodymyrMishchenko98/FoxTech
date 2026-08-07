@@ -37,6 +37,7 @@ class UserProfileTests(TestCase):
                 'email': 'newuser@example.com',
                 'first_name': 'New',
                 'last_name': 'User',
+                'role': 'user',
                 'phone': '+380501112233',
                 'address': 'Kyiv',
                 'password1': 'StrongPass123',

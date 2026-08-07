@@ -21,12 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('click', (e) => {
     const btn = e.target.closest('button[type="submit"], .btn-primary, .btn-outline-primary');
     if (!btn || btn.disabled) return;
-    
+    // Пропускаем кнопки чату — індикатор завантаження керується у chat.js
+    if (btn.closest('[data-chat-widget], [data-chat-manager-page]')) return;
+
     // Добавляем loading state
     btn.disabled = true;
     const originalText = btn.textContent;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Загружається...';
-    
+
     // Восстанавливаем после завершения (max 5 сек)
     setTimeout(() => {
         btn.disabled = false;

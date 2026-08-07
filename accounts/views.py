@@ -58,6 +58,15 @@ class SignUpView(CreateView):
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/profile.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['game_promo_scores'] = (
+            self.request.user.game_scores
+            .select_related('promo_code_issued')
+            .filter(promo_code_issued__isnull=False)
+        )
+        return context
+
 
 class ProfileUpdateView(LoginRequiredMixin, View):
     template_name = 'accounts/profile_form.html'

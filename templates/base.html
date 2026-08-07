@@ -186,14 +186,21 @@
 
             <div class="flex items-center gap-2">
                 <a href="{% url 'store:product_list' %}" class="hidden rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600 lg:inline-flex">Каталог</a>
-                <a href="#" class="hidden rounded-2xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 lg:inline-flex">
-                    Гра <span class="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-xs">Знижка</span>
+                <a href="{% url 'store:game' %}" class="hidden rounded-2xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 lg:inline-flex">
+                    Гра <span class="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-xs">міні-гра</span>
                 </a>
-                <a href="#" class="relative rounded-2xl border border-slate-200 bg-white p-3 text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
+                <a href="{% url 'store:cart' %}" id="cart-link" class="relative rounded-2xl border border-slate-200 bg-white p-3 text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
                     <i class="fa-solid fa-cart-shopping"></i>
-                    <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-600 text-[10px] font-semibold text-white">0</span>
+                    <span id="cart-count" class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-600 text-[10px] font-semibold text-white">0</span>
                 </a>
                 {% if user.is_authenticated %}
+                    {% if user.profile.role == 'manager' %}
+                        <a href="{% url 'chat:my_threads' %}" class="hidden rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600 md:inline-flex">Вхідні повідомлення</a>
+                    {% else %}
+                        <button type="button" data-chat-launch class="hidden rounded-2xl border border-slate-200 bg-white p-3 text-slate-700 transition hover:border-orange-500 hover:text-orange-600 md:inline-flex" aria-label="Відкрити чат">
+                            <i class="fa-regular fa-comments text-base"></i>
+                        </button>
+                    {% endif %}
                     <a href="{% url 'accounts:profile' %}" class="hidden rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600 md:inline-flex">Профіль</a>
                     <form action="{% url 'accounts:logout' %}" method="post" class="hidden md:block">
                         {% csrf_token %}
@@ -220,6 +227,10 @@
 
         {% block content %}{% endblock %}
     </main>
+
+    {% if user.is_authenticated %}
+        {% include 'chat/widget.html' %}
+    {% endif %}
 
     <footer class="mt-12 border-t border-slate-200 bg-slate-900 text-slate-300">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-12 lg:grid-cols-4 lg:px-8">
@@ -264,5 +275,17 @@
             © 2026 FoxTech. Усі права захищені.
         </div>
     </footer>
+    <script>
+        window.CART_API_BASE = {
+            add: "{% url 'store:cart_add' 0 %}",
+            update: "{% url 'store:cart_update' 0 %}",
+            remove: "{% url 'store:cart_remove' 0 %}",
+            detail: "{% url 'store:cart_detail' %}",
+            apply_promo: "{% url 'store:apply_promo_code' %}",
+            remove_promo: "{% url 'store:remove_promo_code' %}",
+        };
+    </script>
+    <script src="{% static 'js/cart.js' %}"></script>
+    <script src="{% static 'js/chat.js' %}"></script>
 </body>
 </html>

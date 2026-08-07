@@ -4,40 +4,28 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
-venv/
+
+# Virtual environment
 .venv/
-env.bak/
-venv.bak/
+venv/
+env/
 
 # Django
+*.sqlite3
 db.sqlite3
-db.sqlite3-journal
-staticfiles/
-media/
-local_settings.py
+*.log
+/media/
+/staticfiles/
+
+# Environment / secrets
 .env
+.env.*
+*.secret
 
 # IDE
-.vscode/
 .idea/
-*.swp
-*.swo
-*~
+.vscode/
 
 # OS
-Thumbs.db
 .DS_Store
-desktop.ini
-
-# Logs
-*.log
-*.pot
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Node
-node_modules/
+Thumbs.db

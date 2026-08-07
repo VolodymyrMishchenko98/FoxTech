@@ -180,6 +180,13 @@ class GameScore(models.Model):
         related_name='game_scores',
     )
     score_points = models.PositiveIntegerField(default=0)
+    promo_code_issued = models.ForeignKey(
+        'PromoCode',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='game_scores',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

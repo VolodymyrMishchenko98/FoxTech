@@ -132,26 +132,27 @@
                 <h2 class="text-lg font-semibold text-slate-900">Мої промокоди</h2>
                 <span class="rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-600">З гри</span>
             </div>
-            <div class="mt-5 space-y-3">
-                <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                    <div>
-                        <p class="font-semibold text-slate-900">FOXTECH10</p>
-                        <p class="text-sm text-slate-500">10% знижки</p>
-                    </div>
-                    <button type="button" data-promo-code="FOXTECH10" class="promo-copy-button rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
-                        Копіювати
-                    </button>
+            {% if game_promo_scores %}
+                <div class="mt-5 space-y-3">
+                    {% for score in game_promo_scores %}
+                        <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <p class="font-semibold text-slate-900">{{ score.promo_code_issued.code }}</p>
+                                <p class="text-sm text-slate-500">
+                                    З гри · {{ score.score_points }} балів · {{ score.created_at|date:'d.m.Y H:i' }}
+                                </p>
+                            </div>
+                            <button type="button" data-promo-code="{{ score.promo_code_issued.code }}" class="promo-copy-button rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
+                                Копіювати
+                            </button>
+                        </div>
+                    {% endfor %}
                 </div>
-                <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                    <div>
-                        <p class="font-semibold text-slate-900">GAMER15</p>
-                        <p class="text-sm text-slate-500">15% знижки</p>
-                    </div>
-                    <button type="button" data-promo-code="GAMER15" class="promo-copy-button rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
-                        Копіювати
-                    </button>
+            {% else %}
+                <div class="mt-5 rounded-[24px] border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                    <p class="text-sm text-slate-500">Поки що тут немає промокодів. Зіграйте у Fox Runner, щоб отримати перший.</p>
                 </div>
-            </div>
+            {% endif %}
         </section>
     </div>
 </div>
@@ -183,3 +184,5 @@
     });
 </script>
 {% endblock %}
+
+

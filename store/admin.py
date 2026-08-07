@@ -61,7 +61,8 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 @admin.register(GameScore)
 class GameScoreAdmin(admin.ModelAdmin):
-    list_display = ('user', 'score_points', 'created_at')
+    list_display = ('user', 'score_points', 'promo_code_issued', 'created_at')
+    list_select_related = ('user', 'promo_code_issued')
     search_fields = ('user__username',)
 
 

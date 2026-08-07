@@ -135,3 +135,36 @@ form textarea {
 form input[type="checkbox"] {
     margin-right: 0.5rem;
 }
+
+/* Fox Runner game shell */
+.fox-runner-shell {
+    background:
+        radial-gradient(circle at top left, rgba(255, 87, 34, 0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(15, 23, 42, 0.16), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
+}
+
+.fox-runner-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: manipulation;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.05)),
+        linear-gradient(180deg, #f8fbff 0%, #edf3fb 100%);
+    box-shadow: 0 18px 45px -20px rgba(15, 23, 42, 0.35);
+}
+
+.fox-runner-panel {
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(14px);
+}
+
+.fox-runner-pill {
+    border: 1px solid rgba(251, 146, 60, 0.18);
+    background: rgba(255, 247, 237, 0.9);
+    color: #9a3412;
+}

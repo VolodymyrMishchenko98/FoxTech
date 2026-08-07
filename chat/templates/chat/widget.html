@@ -1,0 +1,116 @@
+{% if user.is_authenticated and user.profile.role == 'user' %}
+<div
+    data-chat-widget
+    data-chat-role="user"
+    data-chat-user-id="{{ user.id }}"
+    data-chat-managers-url="{% url 'chat:manager_list' %}"
+    data-chat-start-url="{% url 'chat:start_thread' %}"
+    data-chat-threads-url="{% url 'chat:my_threads' %}?format=json"
+    data-chat-thread-detail-template="{% url 'chat:thread_detail' 0 %}"
+    data-chat-thread-send-template="{% url 'chat:send_message' 0 %}"
+    data-chat-thread-poll-template="{% url 'chat:poll_messages' 0 %}"
+    class="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm"
+>
+    <button
+        type="button"
+        data-chat-toggle
+        class="ml-auto flex items-center gap-2 rounded-full bg-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-2xl shadow-orange-600/30 transition hover:bg-orange-700"
+    >
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/15">
+            <i class="fa-solid fa-comment-dots"></i>
+        </span>
+        <span>Чат з менеджером</span>
+    </button>
+
+    <div
+        data-chat-panel
+        class="mt-3 hidden overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20"
+    >
+        <div class="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3">
+            <div>
+                <p class="text-sm font-semibold text-slate-900">FoxTech чат</p>
+                <p class="text-xs text-slate-500">Оберіть діалог або напишіть новому менеджеру</p>
+            </div>
+            <button
+                type="button"
+                data-chat-close
+                class="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:border-orange-500 hover:text-orange-600"
+                aria-label="Закрити чат"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4 px-4 py-4">
+            <div>
+                <div class="mb-3 flex items-center justify-between">
+                    <p class="text-sm font-semibold text-slate-900">Мої діалоги</p>
+                    <button type="button" class="text-xs font-medium text-orange-600 transition hover:text-orange-700" data-chat-show-composer>
+                        Написати ще одному менеджеру
+                    </button>
+                </div>
+                <div class="grid gap-2" data-chat-thread-list>
+                    <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+                        Завантаження діалогів...
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4" data-chat-composer>
+                <p class="text-sm font-semibold text-slate-900">Написати менеджеру</p>
+                <p class="mt-1 text-xs text-slate-500">Оберіть менеджера, з ким хочете почати розмову.</p>
+                <div class="mt-3 grid gap-3">
+                    <select
+                        data-chat-manager-select
+                        class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+                    >
+                        <option value="">Завантаження менеджерів...</option>
+                    </select>
+                    <button
+                        type="button"
+                        data-chat-start-thread
+                        class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled
+                    >
+                        Написати
+                    </button>
+                </div>
+            </div>
+
+            <div data-chat-empty-state class="rounded-3xl bg-slate-50 px-4 py-4 text-sm text-slate-500">
+                Оберіть діалог, щоб побачити повідомлення.
+            </div>
+
+            <div class="hidden" data-chat-conversation>
+                <div class="rounded-3xl border border-slate-200 bg-white">
+                    <div class="border-b border-slate-100 px-4 py-3">
+                        <p class="text-sm font-semibold text-slate-900" data-chat-thread-title>Діалог</p>
+                        <p class="text-xs text-slate-500" data-chat-thread-meta>Підвантаження...</p>
+                    </div>
+                    <div class="max-h-[320px] space-y-3 overflow-y-auto px-4 py-4" data-chat-messages></div>
+                    <form class="border-t border-slate-100 p-3" data-chat-form>
+                        <label class="sr-only" for="chat-message-input">Повідомлення</label>
+                        <textarea
+                            id="chat-message-input"
+                            data-chat-input
+                            rows="3"
+                            maxlength="1000"
+                            placeholder="Ваше повідомлення..."
+                            class="min-h-[88px] w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-orange-500 focus:bg-white"
+                        ></textarea>
+                        <div class="mt-3 flex items-center justify-between gap-3">
+                            <p class="text-xs text-slate-500">Ми відповідаємо у порядку черги.</p>
+                            <button
+                                type="submit"
+                                class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+                            >
+                                Надіслати
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

@@ -7,6 +7,11 @@ from .models import UserProfile
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    role = forms.ChoiceField(
+        choices=UserProfile._meta.get_field('role').choices,
+        label='Хто ви?',
+        widget=forms.RadioSelect,
+    )
     phone = forms.CharField(max_length=20, required=False)
     address = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
 
@@ -17,6 +22,7 @@ class UserRegistrationForm(UserCreationForm):
             'email',
             'first_name',
             'last_name',
+            'role',
             'phone',
             'address',
             'password1',
@@ -25,9 +31,17 @@ class UserRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
+        for name, field in self.fields.items():
+            if name == 'role':
+                continue
             field.widget.attrs.setdefault('class', 'form-control')
         self.fields['address'].widget.attrs['class'] = 'form-control'
+        self.fields['role'].widget.attrs.setdefault(
+            'class',
+            'h-4 w-4 border-slate-300 text-orange-600 focus:ring-orange-500',
+        )
+        if not self.is_bound and not self.initial.get('role'):
+            self.fields['role'].initial = UserProfile.ROLE_USER
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -38,6 +52,7 @@ class UserRegistrationForm(UserCreationForm):
         if commit:
             user.save()
             profile = user.profile
+            profile.role = self.cleaned_data['role']
             profile.phone = self.cleaned_data.get('phone', '')
             profile.address = self.cleaned_data.get('address', '')
             profile.save()

@@ -3,8 +3,8 @@ services:
     name: foxtech
     env: python
     plan: free
-    rootDir: .
-    buildCommand: "pip install -r requirements.txt"
+    rootDir: foxtech
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
     startCommand: "gunicorn foxtech.wsgi:application --log-file -"
     releaseCommand: "python manage.py migrate --noinput --verbosity=2"
     healthCheckPath: /

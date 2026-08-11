@@ -3,26 +3,28 @@
 {% block title %}Видалення товару | FoxTech{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
-        <div class="card shadow-sm border-danger">
-            <div class="card-body">
-                <h1 class="h3 mb-3">Видалити товар?</h1>
-                <p>
-                    Товар <strong>{{ object.title }}</strong> буде видалено безповоротно.
-                </p>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-danger" type="submit">
-                            Видалити
-                        </button>
-                        <a class="btn btn-outline-secondary" href="{{ object.get_absolute_url }}">
-                            Скасувати
-                        </a>
-                    </div>
-                </form>
-            </div>
+<div class="mx-auto w-full max-w-2xl">
+    <div class="overflow-hidden rounded-3xl border border-red-200 bg-white shadow-soft">
+        <div class="bg-gradient-to-br from-red-600 via-red-700 to-red-800 px-6 py-8 text-white sm:px-8">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-red-200">Видалення</p>
+            <h1 class="mt-2 text-3xl font-bold">Видалити товар?</h1>
+        </div>
+
+        <div class="px-6 py-8 sm:px-8">
+            <p class="mb-6 text-sm text-slate-600">
+                Товар <strong class="text-slate-900">{{ object.name }}</strong> буде видалено безповоротно. Цю дію не можна скасувати.
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <div class="flex items-center gap-3">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700">
+                        Видалити
+                    </button>
+                    <a href="{{ object.get_absolute_url }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-300">
+                        Скасувати
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>

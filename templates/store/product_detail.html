@@ -6,22 +6,8 @@
 {% block content %}
 <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
     <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-        <div class="overflow-hidden rounded-[24px] bg-slate-100 p-4">
-            {% if product.has_valid_image %}
-    <img src="{{ product.image_url }}" alt="{{ product.name }}" fetchpriority="high" decoding="async" class="h-[420px] w-full rounded-[20px] object-cover" onerror="this.classList.add(\'hidden\'); this.nextElementSibling.classList.remove(\'hidden\');">
-{% endif %}
-<div class="{% if not product.has_valid_image %}flex{% else %}hidden{% endif %} flex h-[420px] w-full flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-slate-200 bg-gradient-to-br from-slate-50 via-blue-50/30 to-orange-50/20 px-6 py-8 text-center">
-    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-lg ring-1 ring-slate-100">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="6" width="16" height="13" rx="3" stroke="#64748b" stroke-width="1.8"/>
-            <path d="M8 6V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V6" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="12" cy="12.5" r="3.5" stroke="#94a3b8" stroke-width="1.5"/>
-            <circle cx="13.5" cy="11" r="1" fill="#94a3b8"/>
-        </svg>
-    </div>
-    <p class="text-sm font-semibold text-slate-800">Зображення не додане</p>
-    <p class="mt-1 text-xs text-slate-500">Додайте фото для кращого перегляду товару</p>
-</div>
+                <div class="overflow-hidden rounded-[24px] bg-slate-100 p-4">
+            {% include 'partials/product_media.html' with image_src=product.image_url image_alt=product.name fetchpriority='high' image_class='h-[420px] w-full rounded-[20px] object-cover' placeholder_class='flex h-[420px] w-full flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-slate-200 bg-gradient-to-br from-slate-50 via-blue-50/30 to-orange-50/20 px-6 py-8 text-center' %}
         </div>
     </div>
 

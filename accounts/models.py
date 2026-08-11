@@ -35,23 +35,3 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f'Profile for {self.user.username}'
-
-
-class PromoCode(models.Model):
-    profile = models.ForeignKey(
-        UserProfile,
-        on_delete=models.CASCADE,
-        related_name='promo_codes',
-    )
-    code = models.CharField(max_length=64, unique=True)
-    source = models.CharField(max_length=50, default='game')
-    score = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ('-created_at',)
-        verbose_name = 'promo code'
-        verbose_name_plural = 'promo codes'
-
-    def __str__(self):
-        return f'{self.code} for {self.profile.user.username}'

@@ -49,9 +49,7 @@ def _message_payload(message):
 
 
 def _thread_qs_for_user(user):
-    if _is_manager(user):
-        return ChatThread.objects.filter(manager=user)
-    return ChatThread.objects.filter(customer=user)
+    return _thread_access_qs(user)
 
 
 def _thread_access_qs(user):

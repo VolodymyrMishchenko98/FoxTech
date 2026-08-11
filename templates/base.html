@@ -195,6 +195,7 @@
                 </a>
                 {% if user.is_authenticated %}
                     {% if user.profile.role == 'manager' %}
+                        <a href="{% url 'store:product_create' %}" class="hidden rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600 md:inline-flex">Додати товар</a>
                         <a href="{% url 'chat:my_threads' %}" class="hidden rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600 md:inline-flex">Вхідні повідомлення</a>
                     {% else %}
                         <button type="button" data-chat-launch class="hidden rounded-2xl border border-slate-200 bg-white p-3 text-slate-700 transition hover:border-orange-500 hover:text-orange-600 md:inline-flex" aria-label="Відкрити чат">

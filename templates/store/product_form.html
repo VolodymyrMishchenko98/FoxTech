@@ -5,26 +5,28 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="h3 mb-4">
-                    {% if object %}Редагування товару{% else %}Новий товар{% endif %}
-                </h1>
-                <form method="post" novalidate>
-                    {% csrf_token %}
-                    {% include 'partials/form_fields.html' with form=form %}
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary" type="submit">
-                            Зберегти
-                        </button>
-                        <a class="btn btn-outline-secondary" href="{% url 'store:product_list' %}">
-                            Скасувати
-                        </a>
-                    </div>
-                </form>
-            </div>
+<div class="mx-auto w-full max-w-2xl">
+    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 px-6 py-8 text-white sm:px-8">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-orange-300">Каталог</p>
+            <h1 class="mt-2 text-3xl font-bold">
+                {% if object %}Редагування товару{% else %}Новий товар{% endif %}
+            </h1>
+        </div>
+
+        <div class="px-6 py-8 sm:px-8">
+            <form method="post" novalidate class="space-y-6">
+                {% csrf_token %}
+                {% include 'partials/form_fields.html' with form=form %}
+                <div class="flex items-center gap-3">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">
+                        Зберегти
+                    </button>
+                    <a href="{% url 'store:product_list' %}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
+                        Скасувати
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>

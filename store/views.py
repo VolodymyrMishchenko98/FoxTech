@@ -166,10 +166,17 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'store/product_form.html'
+    success_url = reverse_lazy('store:product_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or getattr(request.user.profile, 'role', 'user') != 'manager':
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        messages.success(self.request, 'Product created successfully.')
+        messages.success(self.request, 'Товар створено.')
         return super().form_valid(form)
 
 

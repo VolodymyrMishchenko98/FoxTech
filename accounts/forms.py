@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 from .models import UserProfile
 
+TAILWIND_INPUT_CLASS = 'w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-orange-500 focus:ring-orange-500 focus:outline-none'
+
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -14,7 +16,10 @@ class UserRegistrationForm(UserCreationForm):
         widget=forms.RadioSelect,
     )
     phone = forms.CharField(max_length=20, required=False)
-    address = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+    address = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3, 'class': TAILWIND_INPUT_CLASS}),
+        required=False,
+    )
 
     class Meta:
         model = User
@@ -35,8 +40,7 @@ class UserRegistrationForm(UserCreationForm):
         for name, field in self.fields.items():
             if name == 'role':
                 continue
-            field.widget.attrs.setdefault('class', 'form-control')
-        self.fields['address'].widget.attrs['class'] = 'form-control'
+            field.widget.attrs.setdefault('class', TAILWIND_INPUT_CLASS)
         self.fields['role'].widget.attrs.setdefault(
             'class',
             'h-4 w-4 border-slate-300 text-orange-600 focus:ring-orange-500',
@@ -63,8 +67,8 @@ class UserRegistrationForm(UserCreationForm):
 
 
 class UserLoginForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': TAILWIND_INPUT_CLASS}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': TAILWIND_INPUT_CLASS}))
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -77,7 +81,7 @@ class UserUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs.setdefault('class', 'form-control')
+            field.widget.attrs.setdefault('class', TAILWIND_INPUT_CLASS)
 
 
 class UserProfileForm(forms.ModelForm):
@@ -88,4 +92,7 @@ class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs.setdefault('class', 'form-control')
+            field.widget.attrs.setdefault('class', TAILWIND_INPUT_CLASS)
+        if 'address' in self.fields:
+            self.fields['address'].widget.attrs.setdefault('rows', 3)
+

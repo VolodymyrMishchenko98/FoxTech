@@ -3,27 +3,86 @@
 {% block title %}Редагування профілю | FoxTech{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="h3 mb-4">Редагування профілю</h1>
-                <form method="post" novalidate>
-                    {% csrf_token %}
-                    <h2 class="h5">Основні дані</h2>
-                    {% include 'partials/form_fields.html' with form=user_form %}
-                    <h2 class="h5 mt-4">Контакти</h2>
-                    {% include 'partials/form_fields.html' with form=profile_form %}
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary" type="submit">
-                            Зберегти
-                        </button>
-                        <a class="btn btn-outline-secondary" href="{% url 'accounts:profile' %}">
-                            Скасувати
-                        </a>
+<div class="mx-auto w-full max-w-2xl">
+    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 px-6 py-8 text-white sm:px-8">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-orange-300">Профіль</p>
+            <h1 class="mt-2 text-3xl font-bold">Редагування профілю</h1>
+            <p class="mt-3 max-w-xl text-sm leading-6 text-slate-300">
+                Оновіть основні дані та контактну інформацію.
+            </p>
+        </div>
+
+        <div class="px-6 py-8 sm:px-8">
+            <form method="post" novalidate class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Основні дані</p>
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ user_form.first_name.id_for_label }}">Ім'я</label>
+                            {{ user_form.first_name }}
+                            {% if user_form.first_name.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ user_form.first_name.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ user_form.last_name.id_for_label }}">Прізвище</label>
+                            {{ user_form.last_name }}
+                            {% if user_form.last_name.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ user_form.last_name.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
                     </div>
-                </form>
-            </div>
+
+                    <div class="mt-5">
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ user_form.email.id_for_label }}">Email</label>
+                        {{ user_form.email }}
+                        {% if user_form.email.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ user_form.email.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Контакти</p>
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ profile_form.phone.id_for_label }}">Телефон</label>
+                            {{ profile_form.phone }}
+                            {% if profile_form.phone.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ profile_form.phone.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ profile_form.address.id_for_label }}">Адреса</label>
+                            {{ profile_form.address }}
+                            {% if profile_form.address.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ profile_form.address.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if user_form.non_field_errors or profile_form.non_field_errors %}
+                    <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {{ user_form.non_field_errors|striptags }}
+                        {{ profile_form.non_field_errors|striptags }}
+                    </div>
+                {% endif %}
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">
+                        Зберегти
+                    </button>
+                    <a href="{% url 'accounts:profile' %}" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400">
+                        Скасувати
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>

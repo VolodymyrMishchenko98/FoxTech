@@ -3,29 +3,50 @@
 {% block title %}Вхід{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4 p-lg-5">
-                <h1 class="h3 mb-4">Увійти</h1>
-                <form method="post" novalidate>
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ field.errors|striptags }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                    <button type="submit" class="btn btn-primary w-100">Увійти</button>
-                </form>
-                <div class="mt-3 text-center">
-                    <a href="{% url 'accounts:register' %}">Немає акаунта? Зареєструватися</a>
+<div class="mx-auto w-full max-w-2xl">
+    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 px-6 py-8 text-white sm:px-8">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-orange-300">Акаунт</p>
+            <h1 class="mt-2 text-3xl font-bold">Увійти</h1>
+            <p class="mt-3 max-w-xl text-sm leading-6 text-slate-300">
+                Введіть облікові дані для доступу до профілю.
+            </p>
+        </div>
+
+        <div class="px-6 py-8 sm:px-8">
+            <form method="post" novalidate class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.username.id_for_label }}">Логін</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.username.errors|striptags }}</p>
+                    {% endif %}
                 </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.password.id_for_label }}">Пароль</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.password.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {{ form.non_field_errors|striptags }}
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">
+                    Увійти
+                </button>
+            </form>
+
+            <div class="mt-5 text-center text-sm text-slate-600">
+                Немає акаунта?
+                <a href="{% url 'accounts:register' %}" class="font-medium text-orange-600 transition hover:text-orange-700">Зареєструватися</a>
             </div>
         </div>
     </div>

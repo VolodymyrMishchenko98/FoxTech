@@ -3,18 +3,128 @@
 {% block title %}Реєстрація | FoxTech{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="h3 mb-4">Створити акаунт</h1>
-                <form method="post" novalidate>
-                    {% csrf_token %}
-                    {% include 'partials/form_fields.html' with form=form %}
-                    <button class="btn btn-primary w-100" type="submit">
-                        Зареєструватися
-                    </button>
-                </form>
+<div class="mx-auto w-full max-w-2xl">
+    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 px-6 py-8 text-white sm:px-8">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-orange-300">Створення акаунта</p>
+            <h1 class="mt-2 text-3xl font-bold">Зареєструватися</h1>
+            <p class="mt-3 max-w-xl text-sm leading-6 text-slate-300">
+                Заповніть дані для створення акаунта.
+            </p>
+        </div>
+
+        <div class="px-6 py-8 sm:px-8">
+            <form method="post" novalidate class="space-y-6">
+                {% csrf_token %}
+
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.username.id_for_label }}">Логін</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.username.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.email.id_for_label }}">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.email.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.first_name.id_for_label }}">Ім'я</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.first_name.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.last_name.id_for_label }}">Прізвище</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.last_name.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <p class="mb-3 text-sm font-medium text-slate-700">{{ form.role.label }}</p>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        {% for choice in form.role %}
+                            <label class="group flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-500 hover:bg-orange-50 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50">
+                                <span class="mt-1 flex h-5 w-5 items-center justify-center">
+                                    {{ choice.tag }}
+                                </span>
+                                <span>
+                                    <span class="block text-sm font-semibold text-slate-900">
+                                        {% if forloop.first %}Звичайний користувач{% else %}Менеджер{% endif %}
+                                    </span>
+                                    {% if forloop.first %}
+                                        <span class="mt-1 block text-sm text-slate-600">Купівлі, кошик, промокоди та чат із менеджером.</span>
+                                    {% else %}
+                                        <span class="mt-1 block text-sm text-slate-600">Отримує вхідні повідомлення та відповідає клієнтам.</span>
+                                    {% endif %}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.role.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.role.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.phone.id_for_label }}">Телефон</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.phone.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.address.id_for_label }}">Адреса</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.address.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.password1.id_for_label }}">Пароль</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.password1.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ form.password2.id_for_label }}">Підтвердження пароля</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.password2.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {{ form.non_field_errors|striptags }}
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">
+                    Зареєструватися
+                </button>
+            </form>
+
+            <div class="mt-5 text-center text-sm text-slate-600">
+                Вже маєте акаунт?
+                <a href="{% url 'accounts:login' %}" class="font-medium text-orange-600 transition hover:text-orange-700">Увійти</a>
             </div>
         </div>
     </div>

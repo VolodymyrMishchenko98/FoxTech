@@ -1,5 +1,6 @@
 import json
 import secrets
+from decimal import Decimal, ROUND_HALF_UP
 from datetime import timedelta
 
 from django.contrib import messages
@@ -9,8 +10,8 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import (
@@ -22,7 +23,7 @@ from django.views.generic import (
 )
 
 from .forms import ProductForm
-from .models import Cart, CartItem, Category, GameScore, Product, PromoCode
+from .models import Cart, CartItem, Category, GameScore, Order, OrderItem, Product, PromoCode
 
 
 _CATEGORIES_CACHE_KEY = 'store:all_categories'
@@ -33,6 +34,8 @@ GAME_DURATION_LIMIT_MS = 120000
 GAME_REPLAY_TOKEN_TTL = 86400
 GAME_RATE_LIMIT_SECONDS = 10
 GAME_PROMO_VALID_DAYS = 30
+BONUS_PERCENT = 1
+MONEY_QUANTIZER = Decimal('0.01')
 
 
 def _get_all_categories():
@@ -214,6 +217,10 @@ def _cart_totals(cart, discount_percent=0):
     return items, total
 
 
+def _quantize_money(amount):
+    return amount.quantize(MONEY_QUANTIZER, rounding=ROUND_HALF_UP)
+
+
 def _get_discount_percent(request):
     promo_code_id = request.session.get(_CART_PROMO_SESSION_KEY)
     if not promo_code_id:
@@ -224,6 +231,183 @@ def _get_discount_percent(request):
     except PromoCode.DoesNotExist:
         request.session.pop(_CART_PROMO_SESSION_KEY, None)
         return 0
+
+
+def _wants_json_response(request):
+    accept_header = request.headers.get('Accept', '')
+    return (
+        request.headers.get('x-requested-with') == 'XMLHttpRequest'
+        or 'application/json' in accept_header
+    )
+
+
+def _get_session_promo_code(request):
+    promo_code_id = request.session.get(_CART_PROMO_SESSION_KEY)
+    if not promo_code_id:
+        return None
+    return (
+        PromoCode.objects.select_for_update()
+        .filter(pk=promo_code_id)
+        .first()
+    )
+
+
+def _user_shipping_address(user):
+    profile = getattr(user, 'profile', None)
+    if not profile:
+        return ''
+    return (profile.address or '').strip()
+
+
+@login_required
+def checkout_view(request):
+    cart = _get_cart(request)
+    shipping_address = _user_shipping_address(request.user)
+
+    if request.method == 'GET':
+        discount_percent = _get_discount_percent(request)
+        items, total = _cart_totals(cart, discount_percent=discount_percent)
+        promo_code = None
+        promo_code_id = request.session.get(_CART_PROMO_SESSION_KEY)
+        if promo_code_id and discount_percent:
+            promo_code = PromoCode.objects.filter(pk=promo_code_id).first()
+        checkout_items = [
+            {
+                'product': item.product,
+                'quantity': item.quantity,
+                'subtotal': _quantize_money(item.product.price * item.quantity),
+            }
+            for item in items
+        ]
+
+        return render(
+            request,
+            'store/checkout.html',
+            {
+                'cart_items': checkout_items,
+                'discount_percent': discount_percent,
+                'promo_code': promo_code,
+                'total': _quantize_money(total),
+                'cart': cart,
+                'shipping_address': shipping_address,
+                'has_shipping_address': bool(shipping_address),
+            },
+        )
+
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    with transaction.atomic():
+        if not shipping_address:
+            return JsonResponse(
+                {'error': '??????? ?????? ???????? ? ???????, ??? ???????? ??????????.'},
+                status=400,
+            )
+
+        cart_items = list(cart.items.select_related('product'))
+        if not cart_items:
+            return JsonResponse({'error': 'Кошик порожній'}, status=400)
+
+        products = Product.objects.select_for_update().filter(
+            id__in=[item.product_id for item in cart_items]
+        )
+        products_by_id = {product.id: product for product in products}
+
+        for item in cart_items:
+            product = products_by_id.get(item.product_id)
+            if product is None:
+                return JsonResponse(
+                    {
+                        'error': f'Товар "{item.product.name}" більше недоступний для замовлення.',
+                    },
+                    status=409,
+                )
+            if product.stock_quantity < item.quantity:
+                return JsonResponse(
+                    {
+                        'error': (
+                            f'Недостатньо товару "{product.name}". '
+                            f'Доступно: {product.stock_quantity}, потрібно: {item.quantity}.'
+                        ),
+                        'product_id': product.id,
+                        'available': product.stock_quantity,
+                        'requested': item.quantity,
+                    },
+                    status=409,
+                )
+
+        promo_code = None
+        discount_percent = 0
+        promo_code = _get_session_promo_code(request)
+        if promo_code:
+            if not promo_code.is_used and promo_code.valid_until > timezone.now():
+                discount_percent = promo_code.discount_percent
+            else:
+                promo_code = None
+                request.session.pop(_CART_PROMO_SESSION_KEY, None)
+
+        subtotal = sum(products_by_id[item.product_id].price * item.quantity for item in cart_items)
+        total = subtotal
+        if discount_percent > 0:
+            total = total * (100 - discount_percent) / 100
+        total = _quantize_money(total)
+
+        order = Order.objects.create(
+            user=request.user,
+            promo_code=promo_code,
+            total_amount=total,
+            status=Order.Status.PENDING,
+        )
+
+        for item in cart_items:
+            product = products_by_id[item.product_id]
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                price=product.price,
+                quantity=item.quantity,
+            )
+            product.stock_quantity -= item.quantity
+            product.save(update_fields=['stock_quantity'])
+
+        if promo_code is not None:
+            promo_code.is_used = True
+            promo_code.save(update_fields=['is_used'])
+
+        profile = request.user.profile
+        bonus_increment = _quantize_money(total * BONUS_PERCENT / 100)
+        profile.bonus_balance += bonus_increment
+        profile.save(update_fields=['bonus_balance'])
+
+        cart.items.all().delete()
+        request.session.pop(_CART_PROMO_SESSION_KEY, None)
+
+    if _wants_json_response(request):
+        return JsonResponse(
+            {
+                'order_id': order.id,
+                'status': order.status,
+                'total': str(order.total_amount),
+            }
+        )
+
+    return redirect(reverse('store:order_success', kwargs={'order_id': order.id}))
+
+
+@login_required
+def order_success_view(request, order_id):
+    order = get_object_or_404(
+        Order.objects.select_related('promo_code', 'user'),
+        pk=order_id,
+        user=request.user,
+    )
+    return render(
+        request,
+        'store/order_success.html',
+        {
+            'order': order,
+        },
+    )
 
 
 @require_POST

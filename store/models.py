@@ -141,6 +141,13 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         related_name='orders',
     )
+    promo_code = models.ForeignKey(
+        'PromoCode',
+        on_delete=models.SET_NULL,
+        related_name='orders',
+        null=True,
+        blank=True,
+    )
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(
         max_length=20,

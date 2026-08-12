@@ -7,7 +7,7 @@
     <div>
         <p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Особистий кабінет</p>
         <h1 class="mt-2 text-3xl font-semibold text-slate-900">Вітаємо, {{ user.username }}!</h1>
-        <p class="mt-2 text-slate-600">Керуйте своїм профілем, бонусами та замовленнями в одному місці.</p>
+        <p class="mt-2 text-slate-600">Керуйте профілем, бонусами, замовленнями та промокодами в одному місці.</p>
     </div>
     <a href="{% url 'accounts:profile_edit' %}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-orange-500 hover:text-orange-600">
         <i class="fa-solid fa-pen"></i>
@@ -24,9 +24,10 @@
                 </div>
                 <div>
                     <h2 class="text-xl font-semibold text-slate-900">{{ user.username }}</h2>
-                    <p class="text-sm text-slate-500">{{ user.email|default:'email не вказано' }}</p>
+                    <p class="text-sm text-slate-500">{{ user.email|default:'Email не вказано' }}</p>
                 </div>
             </div>
+
             <div class="mt-6 grid gap-4 sm:grid-cols-2">
                 <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <p class="text-sm text-slate-500">Дата реєстрації</p>
@@ -34,7 +35,7 @@
                 </div>
                 <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <p class="text-sm text-slate-500">Телефон</p>
-                    <p class="mt-1 font-semibold text-slate-900">{{ user.userprofile.phone|default:'—' }}</p>
+                    <p class="mt-1 font-semibold text-slate-900">{{ user.profile.phone|default:'—' }}</p>
                 </div>
             </div>
         </section>
@@ -59,69 +60,98 @@
                 </div>
                 <div class="flex justify-between rounded-2xl bg-slate-50 px-4 py-3">
                     <span class="font-medium text-slate-500">Адреса доставки</span>
-                    <span class="text-slate-900">{{ user.userprofile.address|default:'—' }}</span>
+                    <span class="text-slate-900 text-right">{{ user.profile.address|default:'—' }}</span>
                 </div>
             </div>
         </section>
 
-        <section class="rounded-[28px] bg-slate-900 p-6 text-white shadow-sm">
-            <div class="flex items-start justify-between">
+        <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="flex items-start justify-between gap-4">
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-400">Бонусна програма</p>
-                    <h2 class="mt-2 text-2xl font-semibold">Ваш баланс</h2>
+                    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Бонусна програма</p>
+                    <h2 class="mt-2 text-2xl font-semibold text-slate-900">Бонусний баланс</h2>
                 </div>
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-600 text-xl">
-                    <i class="fa-solid fa-gift"></i>
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
+                    <i class="fa-solid fa-gift text-xl"></i>
                 </div>
             </div>
-            <div class="mt-6 rounded-[24px] border border-white/10 bg-white/10 p-5 backdrop-blur-md">
-                <p class="text-sm text-slate-300">Накопичені бонуси</p>
-                <p class="mt-2 text-4xl font-semibold">{{ user.userprofile.bonus_balance }} ₴</p>
-                <p class="mt-3 text-sm text-slate-300">Бонуси можна виграти в JS-грі та використовувати для наступних покупок.</p>
+
+            <div class="mt-6 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+                <div class="rounded-[24px] bg-slate-900 p-6 text-white shadow-sm">
+                    <p class="text-sm text-slate-300">Накопичено бонусів</p>
+                    <p class="mt-3 text-4xl font-semibold">{{ bonus_balance }} ₴</p>
+                </div>
+                <div class="rounded-[24px] border border-slate-200 bg-slate-50 p-6">
+                    <p class="text-sm font-semibold text-slate-900">Як нараховуються бонуси</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">
+                        За кожне успішне замовлення ви отримуєте {{ bonus_percent }}% від суми замовлення.
+                        Бонуси зараховуються після оформлення замовлення та зберігаються у вашому кабінеті.
+                    </p>
+                </div>
             </div>
         </section>
     </div>
 
     <div class="space-y-6">
         <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-3">
                 <h2 class="text-lg font-semibold text-slate-900">Історія замовлень</h2>
                 <a href="{% url 'store:product_list' %}" class="text-sm font-medium text-orange-600">До каталогу</a>
             </div>
 
-            {% if user.orders.all %}
+            {% if orders %}
                 <div class="mt-5 space-y-4">
-                    {% for order in user.orders.all %}
-                        <div class="rounded-[22px] border border-slate-200 bg-slate-50 p-4">
-                            <div class="flex flex-wrap items-center justify-between gap-2">
+                    {% for order in orders %}
+                        <article class="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+                            <div class="flex flex-wrap items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-sm font-semibold text-slate-900">№ {{ order.id }}</p>
-                                    <p class="text-sm text-slate-500">{{ order.created_at|date:'d.m.Y' }}</p>
+                                    <p class="text-sm font-semibold text-slate-900">Замовлення №{{ order.order.id }}</p>
+                                    <p class="mt-1 text-sm text-slate-500">{{ order.order.created_at|date:'d.m.Y H:i' }}</p>
                                 </div>
-                                <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">В обробці</span>
+                                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ order.badge_class }}">
+                                    {{ order.status_label }}
+                                </span>
                             </div>
-                            <div class="mt-4 flex items-center justify-between text-sm">
-                                <span class="text-slate-500">Сума</span>
-                                <span class="font-semibold text-slate-900">{{ order.total_amount }} грн</span>
-                            </div>
-                            <div class="mt-3 space-y-2">
-                                {% for item in order.items.all %}
+
+                            <div class="mt-4 space-y-2">
+                                {% for item in order.items %}
                                     <div class="flex items-center justify-between rounded-2xl bg-white px-3 py-2 text-sm">
-                                        <span class="text-slate-700">{{ item.product.name }}</span>
+                                        <span class="font-medium text-slate-700">{{ item.product.name }}</span>
                                         <span class="text-slate-500">{{ item.quantity }} × {{ item.price }} грн</span>
                                     </div>
                                 {% endfor %}
                             </div>
-                        </div>
+
+                            <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-sm">
+                                <span class="text-slate-500">Підсумок</span>
+                                <span class="font-semibold text-slate-900">{{ order.order.total_amount }} грн</span>
+                            </div>
+                        </article>
                     {% endfor %}
                 </div>
+
+                {% if orders_page.has_other_pages %}
+                    <div class="mt-5 flex items-center justify-between gap-3">
+                        <div class="text-sm text-slate-500">
+                            Сторінка {{ orders_page.number }} з {{ orders_page.paginator.num_pages }}
+                        </div>
+                        <div class="flex gap-2">
+                            {% if orders_page.has_previous %}
+                                <a href="?page={{ orders_page.previous_page_number }}" class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Назад</a>
+                            {% endif %}
+                            {% if orders_page.has_next %}
+                                <a href="?page={{ orders_page.next_page_number }}" class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Далі</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
             {% else %}
                 <div class="mt-5 rounded-[24px] border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
                     <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50 text-2xl text-orange-600">
                         <i class="fa-solid fa-bag-shopping"></i>
                     </div>
                     <h3 class="mt-4 text-lg font-semibold text-slate-900">Поки що немає замовлень</h3>
-                    <p class="mt-2 text-sm text-slate-500">Ваші покупки з’являться тут після першого замовлення.</p>
+                    <p class="mt-2 text-sm text-slate-500">Перейдіть до каталогу, щоб оформити перше замовлення та побачити його тут.</p>
                     <a href="{% url 'store:product_list' %}" class="mt-5 inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">Перейти до каталогу</a>
                 </div>
             {% endif %}
@@ -129,28 +159,35 @@
 
         <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
             <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-slate-900">Мої промокоди</h2>
-                <span class="rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-600">З гри</span>
+                <h2 class="text-lg font-semibold text-slate-900">Активні промокоди</h2>
+                <span class="rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-600">Ігрові бонуси</span>
             </div>
-            {% if game_promo_scores %}
+
+            {% if active_promo_codes %}
                 <div class="mt-5 space-y-3">
-                    {% for score in game_promo_scores %}
-                        <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <p class="font-semibold text-slate-900">{{ score.promo_code_issued.code }}</p>
-                                <p class="text-sm text-slate-500">
-                                    З гри · {{ score.score_points }} балів · {{ score.created_at|date:'d.m.Y H:i' }}
-                                </p>
+                    {% for promo in active_promo_codes %}
+                        <div class="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-lg font-semibold text-slate-900">{{ promo.code }}</p>
+                                    <p class="mt-1 text-sm text-slate-500">
+                                        Знижка {{ promo.discount_percent }}% · Дійсний до {{ promo.valid_until|date:'d.m.Y H:i' }}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="promo-copy-button inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-500 hover:text-orange-600"
+                                    data-promo-code="{{ promo.code }}"
+                                >
+                                    Скопіювати код
+                                </button>
                             </div>
-                            <button type="button" data-promo-code="{{ score.promo_code_issued.code }}" class="promo-copy-button rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
-                                Копіювати
-                            </button>
                         </div>
                     {% endfor %}
                 </div>
             {% else %}
                 <div class="mt-5 rounded-[24px] border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
-                    <p class="text-sm text-slate-500">Поки що тут немає промокодів. Зіграйте у Fox Runner, щоб отримати перший.</p>
+                    <p class="text-sm text-slate-500">Поки що немає активних промокодів. Зіграйте у міні-гру, щоб отримати новий код.</p>
                 </div>
             {% endif %}
         </section>
@@ -166,11 +203,13 @@
                 if (!code) {
                     return;
                 }
+
                 try {
                     await navigator.clipboard.writeText(code);
                     button.textContent = 'Скопійовано';
                     button.classList.remove('border-slate-200', 'text-slate-700');
                     button.classList.add('border-emerald-500', 'text-emerald-600');
+
                     setTimeout(() => {
                         button.textContent = originalText;
                         button.classList.remove('border-emerald-500', 'text-emerald-600');
@@ -184,5 +223,3 @@
     });
 </script>
 {% endblock %}
-
-

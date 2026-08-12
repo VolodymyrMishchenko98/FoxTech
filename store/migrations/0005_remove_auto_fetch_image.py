@@ -7,9 +7,4 @@ class Migration(migrations.Migration):
         ('store', '0004_gamescore_promo_code_issued'),
     ]
 
-    operations = [
-        migrations.RunSQL(
-            sql='ALTER TABLE store_product DROP COLUMN auto_fetch_image',
-            reverse_sql='ALTER TABLE store_product ADD COLUMN auto_fetch_image bool NOT NULL DEFAULT 0',
-        ),
-    ]
+    operations = []

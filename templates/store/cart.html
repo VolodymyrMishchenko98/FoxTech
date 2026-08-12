@@ -33,6 +33,19 @@
             <div id="cart-count-info" class="text-sm text-slate-500"></div>
         </div>
 
+        <div class="mt-4 flex justify-end">
+            <a href="{% url 'store:checkout' %}" class="rounded-xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">
+                Оформити замовлення
+            </a>
+        </div>
+
+        {% if user.is_authenticated and not user.profile.address %}
+            <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                Щоб оформити замовлення, додайте адресу доставки у профілі.
+            </div>
+        {% endif %}
+
+
         <div class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="mb-4 text-lg font-semibold text-slate-900">Промокод</h2>
             <div id="promo-applied" class="hidden mb-4 flex items-center gap-3 rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3">

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Замовлення оформлено | FoxTech{% endblock %}
+
+{% block content %}
+<div class="mx-auto flex w-full max-w-3xl flex-col items-center">
+    <div class="w-full rounded-[32px] border border-emerald-200 bg-white p-8 text-center shadow-sm">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+            <i class="fa-solid fa-check text-2xl"></i>
+        </div>
+        <p class="mt-5 text-sm font-semibold uppercase tracking-[0.25em] text-emerald-600">Success</p>
+        <h1 class="mt-3 text-3xl font-bold text-slate-900">Замовлення оформлено</h1>
+        <p class="mt-3 text-slate-600">
+            Номер замовлення: <span class="font-semibold text-slate-900">#{{ order.id }}</span>
+        </p>
+        <p class="mt-2 text-slate-600">
+            Сума до сплати: <span class="font-semibold text-slate-900">{{ order.total_amount }} грн</span>
+        </p>
+        <p class="mt-2 text-slate-600">
+            Статус: <span class="font-semibold text-slate-900">{{ order.get_status_display }}</span>
+        </p>
+
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+            <a href="{% url 'store:product_list' %}" class="rounded-2xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">
+                Повернутися до каталогу
+            </a>
+            <a href="{% url 'accounts:profile' %}" class="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
+                До профілю
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

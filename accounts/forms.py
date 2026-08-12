@@ -10,6 +10,7 @@ class UserRegistrationForm(UserCreationForm):
     role = forms.ChoiceField(
         choices=UserProfile._meta.get_field('role').choices,
         label='Хто ви?',
+        required=False,
         widget=forms.RadioSelect,
     )
     phone = forms.CharField(max_length=20, required=False)
@@ -48,11 +49,12 @@ class UserRegistrationForm(UserCreationForm):
         user.email = self.cleaned_data['email']
         user.first_name = self.cleaned_data.get('first_name', '')
         user.last_name = self.cleaned_data.get('last_name', '')
+        role = self.cleaned_data.get('role') or UserProfile.ROLE_USER
 
         if commit:
             user.save()
             profile = user.profile
-            profile.role = self.cleaned_data['role']
+            profile.role = role
             profile.phone = self.cleaned_data.get('phone', '')
             profile.address = self.cleaned_data.get('address', '')
             profile.save()

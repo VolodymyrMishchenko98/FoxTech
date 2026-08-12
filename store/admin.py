@@ -48,9 +48,10 @@ class CartItemAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('user', 'total_amount', 'status', 'created_at')
+    list_display = ('user', 'promo_code', 'total_amount', 'status', 'created_at')
     list_filter = ('status', 'created_at')
-    search_fields = ('user__username',)
+    list_select_related = ('user', 'promo_code')
+    search_fields = ('user__username', 'promo_code__code')
 
 
 @admin.register(OrderItem)

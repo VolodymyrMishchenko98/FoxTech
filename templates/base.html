@@ -210,7 +210,7 @@
             <form action="{% url 'store:product_list' %}" method="get" class="hidden flex-1 items-center rounded-2xl border border-slate-200 bg-slate-100/80 px-3 py-2 shadow-sm md:flex md:max-w-xl lg:mx-10" id="search-form">
                 <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
                 <input type="search" name="q" value="{{ search_query|default:'' }}" placeholder="Швидкий пошук" class="ml-3 w-full border-0 bg-transparent text-sm outline-none" id="search-input">
-                <button type="submit" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-orange-600" id="search-submit">Пошук</button>
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-3 py-2 text-sm font-medium leading-none text-white transition hover:bg-orange-600" id="search-submit">Пошук</button>
             </form>
 
             <!-- Right Actions -->
@@ -221,34 +221,34 @@
                 </a>
 
                 <!-- Cart -->
-                <a href="{% url 'store:cart' %}" id="cart-link" class="relative rounded-2xl border border-slate-200 bg-white p-2 text-slate-700 transition hover:border-orange-500 hover:text-orange-600 sm:p-3">
-                    <i class="fa-solid fa-cart-shopping text-lg sm:text-base"></i>
+                <a href="{% url 'store:cart' %}" id="cart-link" class="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:border-orange-500 hover:text-orange-600">
+                    <i class="fa-solid fa-cart-shopping text-base"></i>
                     <span id="cart-count" class="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-orange-600 text-[10px] font-semibold text-white">0</span>
                 </a>
 
                 <!-- Desktop Actions -->
-                <div class="hidden gap-2 md:flex md:gap-3">
-                    <a href="{% url 'store:product_list' %}" class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Каталог</a>
-                    <a href="{% url 'store:game' %}" class="rounded-2xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700">
-                        Гра <span class="ml-1 hidden rounded-full bg-white/20 px-2 py-0.5 text-xs lg:inline">міні-гра</span>
+                <div class="hidden items-center gap-2 md:flex md:gap-3">
+                    <a href="{% url 'store:product_list' %}" class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium leading-none text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Каталог</a>
+                    <a href="{% url 'store:game' %}" class="inline-flex h-11 items-center justify-center rounded-2xl bg-orange-600 px-4 text-sm font-semibold leading-none text-white shadow-sm transition hover:bg-orange-700">
+                        Гра <span class="ml-1 hidden rounded-full bg-white/20 px-2 py-0.5 text-[10px] leading-none lg:inline">міні-гра</span>
                     </a>
                     {% if user.is_authenticated %}
                         {% if user.profile.role == 'manager' %}
-                            <a href="{% url 'store:product_create' %}" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Додати товар</a>
-                            <a href="{% url 'chat:my_threads' %}" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Вхідні</a>
+                            <a href="{% url 'store:product_create' %}" class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 text-sm font-medium leading-none text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Додати товар</a>
+                            <a href="{% url 'chat:my_threads' %}" class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 text-sm font-medium leading-none text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Вхідні</a>
                         {% else %}
-                            <button type="button" data-chat-launch class="rounded-2xl border border-slate-200 bg-white p-3 text-slate-700 transition hover:border-orange-500 hover:text-orange-600" aria-label="Відкрити чат">
+                            <button type="button" data-chat-launch class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:border-orange-500 hover:text-orange-600" aria-label="Відкрити чат">
                                 <i class="fa-regular fa-comments text-base"></i>
                             </button>
                         {% endif %}
-                        <a href="{% url 'accounts:profile' %}" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Профіль</a>
-                        <form action="{% url 'accounts:logout' %}" method="post" class="inline-block">
+                        <a href="{% url 'accounts:profile' %}" class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 text-sm font-medium leading-none text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Профіль</a>
+                        <form action="{% url 'accounts:logout' %}" method="post" class="inline-flex">
                             {% csrf_token %}
-                            <button type="submit" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Вийти</button>
+                            <button type="submit" class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 text-sm font-medium leading-none text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Вийти</button>
                         </form>
                     {% else %}
-                        <a href="{% url 'accounts:login' %}" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Увійти</a>
-                        <a href="{% url 'accounts:register' %}" class="rounded-2xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">Реєстрація</a>
+                        <a href="{% url 'accounts:login' %}" class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 text-sm font-medium leading-none text-slate-700 transition hover:border-orange-500 hover:text-orange-600">Увійти</a>
+                        <a href="{% url 'accounts:register' %}" class="inline-flex h-11 items-center justify-center rounded-2xl bg-slate-900 px-3 text-sm font-semibold leading-none text-white transition hover:bg-orange-600">Реєстрація</a>
                     {% endif %}
                 </div>
 

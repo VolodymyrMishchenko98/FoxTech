@@ -1,7 +1,3 @@
-/**
- * FoxTech Cart JS — динамічна корзина на чистому fetch без DRF
- */
-
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);

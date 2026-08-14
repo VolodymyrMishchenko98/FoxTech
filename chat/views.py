@@ -31,6 +31,8 @@ def _is_manager(user):
 
 
 def _display_name(user):
+    if user is None:
+        return 'Підтримка'
     return user.get_full_name() or user.get_username()
 
 
@@ -76,6 +78,7 @@ def _thread_unread_count(thread, viewer):
 
 def _thread_summary(thread, viewer):
     counterpart = thread.manager if thread.customer_id == viewer.id else thread.customer
+    counterpart_name = _display_name(counterpart)
     last_message = thread.messages.select_related('sender').order_by('-created_at', '-id').first()
     return {
         'id': thread.id,
@@ -83,8 +86,8 @@ def _thread_summary(thread, viewer):
         'customer_name': _display_name(thread.customer),
         'manager_id': thread.manager_id,
         'manager_name': _display_name(thread.manager),
-        'counterpart_id': counterpart.id,
-        'counterpart_name': _display_name(counterpart),
+        'counterpart_id': counterpart.id if counterpart else None,
+        'counterpart_name': counterpart_name,
         'created_at': thread.created_at.isoformat(),
         'is_closed': thread.is_closed,
         'unread_count': _thread_unread_count(thread, viewer),

@@ -1,8 +1,3 @@
-/**
- * Catalog Filter Management
- * Handles opening/closing of mobile catalog filters
- */
-
 (function() {
     'use strict';
 
@@ -15,7 +10,6 @@
             return;
         }
 
-        // Close function
         function closeFilters() {
             filterSidebarMobile.style.transform = 'translateX(100%)';
             filterSidebarMobile.style.display = 'none';
@@ -24,7 +18,6 @@
             document.body.style.overflow = '';
         }
 
-        // Open function
         function openFilters() {
             filterSidebarMobile.style.display = 'block';
             filterSidebarMobile.style.transform = 'translateX(0)';
@@ -33,7 +26,6 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // Toggle button
         if (filterToggleMobile) {
             filterToggleMobile.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -42,7 +34,6 @@
             });
         }
 
-        // Overlay click
         if (filterOverlayMobile) {
             filterOverlayMobile.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -51,7 +42,6 @@
             });
         }
 
-        // Close button in filter header
         const closeBtn = filterSidebarMobile.querySelector('button[type="button"]');
         if (closeBtn) {
             closeBtn.addEventListener('click', (e) => {
@@ -61,7 +51,6 @@
             });
         }
 
-        // Close on category/link click
         const filterLinks = filterSidebarMobile.querySelectorAll('a');
         filterLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -69,7 +58,6 @@
             });
         });
 
-        // Handle form submission (submit button)
         const filterForm = filterSidebarMobile.querySelector('form');
         if (filterForm) {
             const submitBtn = filterForm.querySelector('button[type="submit"]');
@@ -80,14 +68,12 @@
             }
         }
 
-        // Close on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && filterSidebarMobile.style.display !== 'none') {
                 closeFilters();
             }
         });
 
-        // Handle window resize
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
@@ -98,7 +84,6 @@
             }, 250);
         });
 
-        // Touch swipe optimization
         let touchStartX = 0;
 
         document.addEventListener('touchstart', (e) => {
@@ -109,14 +94,12 @@
             const touchEndX = e.changedTouches[0].screenX;
             const diff = touchStartX - touchEndX;
             
-            // Свайп влево более 50px - закрыть фильтры
             if (diff > 50 && filterSidebarMobile.style.display !== 'none') {
                 closeFilters();
             }
         }, { passive: true });
     }
 
-    // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initCatalogFilters);
     } else {

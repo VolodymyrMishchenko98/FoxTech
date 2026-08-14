@@ -15,6 +15,7 @@
     const restartBtn = document.getElementById('fox-runner-restart');
     const jumpBtn = document.getElementById('fox-runner-jump');
     const tokenEl = document.getElementById('fox-client-token');
+    const hintsEl = document.querySelector('[data-fox-runner-hints]');
     const submitUrl = canvas.dataset.submitUrl || '/api/game/submit-score/';
 
     const ROUND_SECONDS = 60;
@@ -158,11 +159,17 @@
     function showOverlay() {
         if (!overlayEl) return;
         overlayEl.style.opacity = '1';
+        if (hintsEl) {
+            hintsEl.classList.add('opacity-0');
+        }
     }
 
     function hideOverlay() {
         if (!overlayEl) return;
         overlayEl.style.opacity = '0';
+        if (hintsEl) {
+            hintsEl.classList.remove('opacity-0');
+        }
     }
 
     function spawnObstacle() {

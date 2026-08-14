@@ -1,8 +1,3 @@
-/**
- * Mobile Menu Management
- * Handles opening/closing of mobile navigation menu
- */
-
 (function() {
     'use strict';
 
@@ -15,7 +10,6 @@
             return;
         }
 
-        // Close menu function
         function closeMenu() {
             mobileMenu.style.transform = 'translateX(100%)';
             mobileMenu.style.display = 'none';
@@ -23,7 +17,6 @@
             document.body.style.overflow = '';
         }
 
-        // Open menu function
         function openMenu() {
             mobileMenu.style.display = 'block';
             mobileMenu.style.transform = 'translateX(0)';
@@ -31,21 +24,18 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // Menu button click - открытие меню
         mobileMenuBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             openMenu();
         });
 
-        // Overlay click - закрытие меню
         mobileMenuOverlay.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             closeMenu();
         });
 
-        // Close buttons in menu header
         const closeButtons = mobileMenu.querySelectorAll('button[aria-label="Закрити меню"], button[aria-label="Закрити фільтри"]');
         closeButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -55,7 +45,6 @@
             });
         });
 
-        // Close menu when clicking on menu links
         const menuLinks = mobileMenu.querySelectorAll('a');
         menuLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -63,14 +52,12 @@
             });
         });
 
-        // Close menu on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && mobileMenu.style.display !== 'none') {
                 closeMenu();
             }
         });
 
-        // Handle window resize
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
@@ -81,7 +68,6 @@
             }, 250);
         });
 
-        // Touch optimization - close menu on swipe right
         let touchStartX = 0;
 
         document.addEventListener('touchstart', (e) => {
@@ -90,9 +76,8 @@
 
         document.addEventListener('touchend', (e) => {
             const touchEndX = e.changedTouches[0].screenX;
-            const diff = touchEndX - touchStartX; // Правой рукой свайпаем вправо
+            const diff = touchEndX - touchStartX;
             
-            // Свайп вправо более 50px для меню с правой стороны
             if (diff > 50 && mobileMenu.style.display !== 'none') {
                 closeMenu();
             }

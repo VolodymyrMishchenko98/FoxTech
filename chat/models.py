@@ -12,6 +12,8 @@ class ChatThread(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='chat_threads_as_manager',
+        null=True,
+        blank=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     is_closed = models.BooleanField(default=False)
@@ -23,7 +25,7 @@ class ChatThread(models.Model):
         verbose_name_plural = 'chat threads'
 
     def __str__(self):
-        return f'Thread #{self.pk}: {self.customer} -> {self.manager}'
+        return f'Thread #{self.pk}: {self.customer} -> {self.manager or "unassigned"}'
 
 
 class ChatMessage(models.Model):

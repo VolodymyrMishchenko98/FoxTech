@@ -33,32 +33,32 @@
             </div>
         </div>
 
-        <div class="mx-auto w-full max-w-[800px]">
+        <div class="mx-auto w-full max-w-[680px]">
             <div class="relative overflow-hidden rounded-[28px] fox-runner-panel p-3 md:p-4">
-                <div class="pointer-events-none absolute inset-x-6 top-6 z-10 flex flex-wrap gap-2">
+                <div data-fox-runner-hints class="pointer-events-none absolute inset-x-6 top-6 z-10 flex flex-wrap gap-2">
                     <span class="fox-runner-pill rounded-full px-3 py-1 text-xs font-semibold">Пробіл / ↑ — стрибок</span>
                     <span class="fox-runner-pill rounded-full px-3 py-1 text-xs font-semibold">Торкніться екрана на мобільному</span>
                 </div>
 
-                <div class="relative mx-auto w-full" style="aspect-ratio: 16 / 9; max-width: 800px;">
-                    <canvas id="fox-runner" width="800" height="450" class="fox-runner-canvas block h-full w-full" data-submit-url="/api/game/submit-score/"></canvas>
+                <div class="relative mx-auto w-full aspect-square" style="max-width: 680px;">
+                    <canvas id="fox-runner" width="800" height="800" class="fox-runner-canvas block h-full w-full" data-submit-url="/api/game/submit-score/"></canvas>
 
-                    <div id="fox-runner-overlay" class="pointer-events-none absolute inset-0 flex items-center justify-center p-6 opacity-0 transition duration-300">
-                        <div class="max-w-md rounded-[24px] border border-slate-200 bg-white/95 p-6 text-center shadow-2xl backdrop-blur-md">
-                            <p id="fox-runner-overlay-title" class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">Раунд завершено</p>
-                            <h2 id="fox-runner-overlay-main" class="mt-3 text-2xl font-semibold text-slate-900">Надсилаємо рахунок...</h2>
-                            <p id="fox-runner-overlay-text" class="mt-3 text-sm leading-6 text-slate-600">Результат піде на сервер. Нагорода з’явиться лише після відповіді.</p>
-                            <div class="mt-5 grid grid-cols-2 gap-3 text-left">
+                    <div id="fox-runner-overlay" class="pointer-events-none absolute inset-0 flex items-center justify-center p-3 opacity-0 transition duration-300 sm:p-6">
+                        <div class="w-full max-w-[18rem] rounded-[20px] border border-slate-200 bg-white/95 p-4 text-center shadow-2xl backdrop-blur-md sm:max-w-[22rem] sm:p-6">
+                            <p id="fox-runner-overlay-title" class="text-[11px] font-semibold uppercase tracking-[0.22em] text-orange-600 sm:text-sm">Раунд завершено</p>
+                            <h2 id="fox-runner-overlay-main" class="mt-2 text-base font-semibold text-slate-900 sm:mt-3 sm:text-xl">Надсилаємо рахунок...</h2>
+                            <p id="fox-runner-overlay-text" class="mt-2 text-[11px] leading-5 text-slate-600 sm:mt-3 sm:text-sm sm:leading-6">Результат піде на сервер. Нагорода з’явиться лише після відповіді.</p>
+                            <div class="mt-4 grid grid-cols-1 gap-2 text-left sm:mt-5 sm:grid-cols-2 sm:gap-3">
                                 <div class="rounded-2xl bg-slate-50 p-4">
-                                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Фінальний рахунок</p>
-                                    <p id="fox-runner-final-score" class="mt-1 text-2xl font-semibold text-slate-900">0</p>
+                                    <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-[11px]">Фінальний рахунок</p>
+                                    <p id="fox-runner-final-score" class="mt-1 text-lg font-semibold text-slate-900 sm:text-xl">0</p>
                                 </div>
                                 <div class="rounded-2xl bg-orange-50 p-4">
-                                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-700">Нагорода</p>
-                                    <p id="fox-runner-reward" class="mt-1 text-lg font-semibold text-orange-700">Очікування...</p>
+                                    <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-orange-700 sm:text-[11px]">Нагорода</p>
+                                    <p id="fox-runner-reward" class="mt-1 text-sm font-semibold text-orange-700 sm:text-base">Очікування...</p>
                                 </div>
                             </div>
-                            <button type="button" id="fox-runner-restart" class="pointer-events-auto mt-5 inline-flex rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60">
+                            <button type="button" id="fox-runner-restart" class="pointer-events-auto mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60 sm:mt-5 sm:w-auto sm:px-5">
                                 Грати ще раз
                             </button>
                         </div>

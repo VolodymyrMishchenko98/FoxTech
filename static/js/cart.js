@@ -250,26 +250,33 @@ async function loadCart() {
         tbody.innerHTML = '';
 
         if (data.items.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Кошик порожній</td></tr>';
+            tbody.innerHTML = '<div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">Кошик порожній</div>';
         } else {
             data.items.forEach(function(item) {
-                const row = document.createElement('tr');
-                row.id = 'cart-item-' + item.id;
-                row.innerHTML =
-                    '<td class="px-6 py-4">' +
-                        '<div class="text-sm font-medium text-slate-900">' + escapeHtml(item.product_name) + '</div>' +
-                    '</td>' +
-                    '<td class="px-6 py-4 text-sm text-slate-700">' + formatPrice(item.price) + ' грн</td>' +
-                    '<td class="px-6 py-4">' +
-                        '<input type="number" value="' + item.quantity + '" min="0" max="' + item.stock_quantity + '" ' +
-                            'class="w-20 rounded-xl border border-slate-200 px-3 py-1 text-sm outline-none focus:border-orange-600" ' +
-                            'onchange="updateQuantity(' + item.id + ', this.value)">' +
-                    '</td>' +
-                    '<td class="px-6 py-4 text-sm font-medium text-slate-900">' + formatPrice(item.subtotal) + ' грн</td>' +
-                    '<td class="px-6 py-4 text-right text-sm">' +
-                        '<button type="button" onclick="removeItem(' + item.id + ')" class="text-red-600 hover:text-red-700">Видалити</button>' +
-                    '</td>';
-                tbody.appendChild(row);
+                const card = document.createElement('article');
+                card.id = 'cart-item-' + item.id;
+                card.className = 'rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm';
+                card.innerHTML =
+                    '<div class="flex items-start justify-between gap-3">' +
+                        '<div class="min-w-0 flex-1">' +
+                            '<h3 class="text-base font-semibold text-slate-900">' + escapeHtml(item.product_name) + '</h3>' +
+                            '<p class="mt-1 text-sm text-slate-500">' + formatPrice(item.price) + ' грн / шт</p>' +
+                        '</div>' +
+                        '<button type="button" onclick="removeItem(' + item.id + ')" class="rounded-xl border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100">Видалити</button>' +
+                    '</div>' +
+                    '<div class="mt-4 flex items-center justify-between gap-3">' +
+                        '<div class="flex items-center gap-2">' +
+                            '<label class="text-xs font-medium uppercase tracking-wide text-slate-500">Кількість</label>' +
+                            '<input type="number" value="' + item.quantity + '" min="0" max="' + item.stock_quantity + '" ' +
+                                'class="w-20 rounded-xl border border-slate-200 bg-white px-3 py-2 text-base text-slate-900 outline-none transition focus:border-orange-600" ' +
+                                'onchange="updateQuantity(' + item.id + ', this.value)">' +
+                        '</div>' +
+                        '<div class="text-right">' +
+                            '<p class="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">Сума</p>' +
+                            '<p class="mt-1 text-base font-bold text-slate-900">' + formatPrice(item.subtotal) + ' грн</p>' +
+                        '</div>' +
+                    '</div>';
+                tbody.appendChild(card);
             });
         }
         const info = document.getElementById('cart-count-info');

@@ -4,49 +4,38 @@
 {% block title %}Кошик | FoxTech{% endblock %}
 
 {% block content %}
-<div class="mx-auto max-w-7xl">
-    <h1 class="mb-6 text-3xl font-bold text-slate-900">Кошик</h1>
+<div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <h1 class="mb-5 text-2xl font-bold text-slate-900 sm:text-3xl">Кошик</h1>
 
-    <div id="cart-messages"></div>
+    <div id="cart-messages" class="mb-4"></div>
 
-    <div id="cart-content">
-        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <table class="min-w-full divide-y divide-slate-200">
-                <thead class="bg-slate-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Товар</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Ціна</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Кількість</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Сума</th>
-                        <th class="px-6 py-3"></th>
-                    </tr>
-                </thead>
-                <tbody id="cart-items-body" class="divide-y divide-slate-200">
-                </tbody>
-            </table>
+    <div id="cart-content" class="space-y-5">
+        <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+            <div id="cart-items-body" class="space-y-3"></div>
         </div>
 
-        <div class="mt-6 flex items-center justify-between">
-            <div class="text-lg font-semibold text-slate-900">
-                Разом: <span id="cart-total">0.00</span> грн
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="text-lg font-semibold text-slate-900">
+                    Разом: <span id="cart-total">0.00</span> грн
+                </div>
+                <div id="cart-count-info" class="text-sm text-slate-500"></div>
             </div>
-            <div id="cart-count-info" class="text-sm text-slate-500"></div>
-        </div>
 
-        <div class="mt-4 flex justify-end">
-            <a href="{% url 'store:checkout' %}" class="rounded-xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">
-                Оформити замовлення
-            </a>
+            <div class="mt-4">
+                <a href="{% url 'store:checkout' %}" class="flex w-full items-center justify-center rounded-2xl bg-orange-600 px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-orange-700 sm:w-auto sm:px-6">
+                    Оформити замовлення
+                </a>
+            </div>
         </div>
 
         {% if user.is_authenticated and not user.profile.address %}
-            <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
                 Щоб оформити замовлення, додайте адресу доставки у профілі.
             </div>
         {% endif %}
 
-
-        <div class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <h2 class="mb-4 text-lg font-semibold text-slate-900">Промокод</h2>
             <div id="promo-applied" class="hidden mb-4 flex items-center gap-3 rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3">
                 <span class="text-sm font-medium text-orange-700">
@@ -54,9 +43,9 @@
                 </span>
                 <button type="button" id="promo-remove-btn" class="ml-auto text-sm font-medium text-orange-600 hover:text-orange-700">Скинути</button>
             </div>
-            <form id="promo-form" class="flex gap-2" onsubmit="event.preventDefault();">
-                <input type="text" id="promo-input" placeholder="Введіть промокод" class="flex-1 rounded-xl border border-slate-200 px-4 py-2 text-sm outline-none focus:border-orange-600">
-                <button type="submit" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">Застосувати</button>
+            <form id="promo-form" class="flex flex-col gap-2 sm:flex-row" onsubmit="event.preventDefault();">
+                <input type="text" id="promo-input" placeholder="Введіть промокод" class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base outline-none transition focus:border-orange-600 focus:bg-white">
+                <button type="submit" class="rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">Застосувати</button>
             </form>
             <p id="promo-message" class="mt-2 text-sm"></p>
         </div>

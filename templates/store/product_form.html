@@ -1,25 +1,31 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block title %}
     {% if object %}Редагування товару{% else %}Новий товар{% endif %} | FoxTech
 {% endblock %}
 
 {% block content %}
-<div class="mx-auto w-full max-w-2xl">
+<div class="mx-auto w-full max-w-3xl">
     <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft">
         <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 px-6 py-8 text-white sm:px-8">
             <p class="text-sm font-semibold uppercase tracking-[0.2em] text-orange-300">Каталог</p>
             <h1 class="mt-2 text-3xl font-bold">
                 {% if object %}Редагування товару{% else %}Новий товар{% endif %}
             </h1>
+            <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+                Заповніть основні дані, щоб товар одразу виглядав охайно в каталозі та був готовий до публікації.
+            </p>
         </div>
 
         <div class="px-6 py-8 sm:px-8">
             <form method="post" novalidate class="space-y-6" enctype="multipart/form-data">
                 {% csrf_token %}
-                {% include 'partials/form_fields.html' with form=form %}
-                <div class="flex flex-wrap items-center gap-3">
-                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">
+                <div class="grid gap-5 sm:grid-cols-2">
+                    {% include 'partials/form_fields.html' with form=form %}
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">
                         Зберегти
                     </button>
                     {% if object %}

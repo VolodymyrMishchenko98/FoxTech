@@ -1,17 +1,24 @@
 {% for field in form.visible_fields %}
-    <div>
-        <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ field.id_for_label }}">
-            {{ field.label }}
-        </label>
+    <div class="{% if field.name == 'description' or field.name == 'specs' %}sm:col-span-2{% endif %}">
         {% if field.field.widget.input_type == 'checkbox' %}
-            <label class="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                {{ field }}
-                <span>{{ field.label }}</span>
+            <label class="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 transition hover:border-orange-500 hover:bg-orange-50">
+                <span class="flex h-5 w-5 items-center justify-center">
+                    {{ field }}
+                </span>
+                <span>
+                    <span class="block font-medium text-slate-900">{{ field.label }}</span>
+                    {% if field.help_text %}
+                        <span class="mt-0.5 block text-xs text-slate-500">{{ field.help_text }}</span>
+                    {% endif %}
+                </span>
             </label>
         {% else %}
+            <label class="mb-2 block text-sm font-medium text-slate-700" for="{{ field.id_for_label }}">
+                {{ field.label }}
+            </label>
             {{ field }}
         {% endif %}
-        {% if field.help_text %}
+        {% if field.help_text and field.field.widget.input_type != 'checkbox' %}
             <p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>
         {% endif %}
         {% if field.errors %}

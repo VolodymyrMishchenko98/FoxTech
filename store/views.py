@@ -720,6 +720,13 @@ class ProductDeleteView(ProductOwnerMixin, DeleteView):
     template_name = 'store/product_confirm_delete.html'
     success_url = reverse_lazy('store:product_list')
 
+    def delete(self, request, *args, **kwargs):
+        product = self.get_object()
+        product.is_available = False
+        product.save(update_fields=['is_available'])
+        messages.success(request, 'Товар приховано з каталогу.')
+        return redirect(self.success_url)
+
     def form_valid(self, form):
         messages.success(self.request, 'Product deleted successfully.')
         return super().form_valid(form)

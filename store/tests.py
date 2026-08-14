@@ -45,6 +45,36 @@ class ProductViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Image not added')
 
+    def test_manager_created_product_is_public(self):
+        manager = User.objects.create_user(
+            username='manager',
+            password='StrongPass123',
+            email='manager@example.com',
+        )
+        manager.profile.role = 'manager'
+        manager.profile.save(update_fields=['role'])
+        self.client.force_login(manager)
+
+        response = self.client.post(
+            reverse('store:product_create'),
+            {
+                'category': self.category.pk,
+                'name': 'Manager Phone',
+                'slug': 'manager-phone',
+                'price': '19999.00',
+                'stock_quantity': 5,
+                'description': 'Created by manager.',
+                'specs': '{}',
+                'is_available': '',
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        product = Product.objects.get(slug='manager-phone')
+        self.assertTrue(product.is_available)
+        self.assertContains(response, product.name)
+
 
 class CheckoutViewTests(TransactionTestCase):
     reset_sequences = True

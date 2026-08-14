@@ -1,4 +1,4 @@
-import json
+﻿import json
 import secrets
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import timedelta
@@ -179,6 +179,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        form.instance.is_available = True
         messages.success(self.request, 'Товар створено.')
         return super().form_valid(form)
 
@@ -306,7 +307,7 @@ def checkout_view(request):
 
         cart_items = list(cart.items.select_related('product'))
         if not cart_items:
-            return JsonResponse({'error': 'Кошик порожній'}, status=400)
+            return JsonResponse({'error': 'РљРѕС€РёРє РїРѕСЂРѕР¶РЅС–Р№'}, status=400)
 
         products = Product.objects.select_for_update().filter(
             id__in=[item.product_id for item in cart_items]
@@ -318,7 +319,7 @@ def checkout_view(request):
             if product is None:
                 return JsonResponse(
                     {
-                        'error': f'Товар "{item.product.name}" більше недоступний для замовлення.',
+                        'error': f'РўРѕРІР°СЂ "{item.product.name}" Р±С–Р»СЊС€Рµ РЅРµРґРѕСЃС‚СѓРїРЅРёР№ РґР»СЏ Р·Р°РјРѕРІР»РµРЅРЅСЏ.',
                     },
                     status=409,
                 )
@@ -326,8 +327,8 @@ def checkout_view(request):
                 return JsonResponse(
                     {
                         'error': (
-                            f'Недостатньо товару "{product.name}". '
-                            f'Доступно: {product.stock_quantity}, потрібно: {item.quantity}.'
+                            f'РќРµРґРѕСЃС‚Р°С‚РЅСЊРѕ С‚РѕРІР°СЂСѓ "{product.name}". '
+                            f'Р”РѕСЃС‚СѓРїРЅРѕ: {product.stock_quantity}, РїРѕС‚СЂС–Р±РЅРѕ: {item.quantity}.'
                         ),
                         'product_id': product.id,
                         'available': product.stock_quantity,
@@ -415,10 +416,10 @@ def cart_add(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
 
     if not product.is_available:
-        return JsonResponse({'error': 'Товар недоступний для замовлення'}, status=409)
+        return JsonResponse({'error': 'РўРѕРІР°СЂ РЅРµРґРѕСЃС‚СѓРїРЅРёР№ РґР»СЏ Р·Р°РјРѕРІР»РµРЅРЅСЏ'}, status=409)
 
     if product.stock_quantity <= 0:
-        return JsonResponse({'error': 'Товар відсутній на складі'}, status=409)
+        return JsonResponse({'error': 'РўРѕРІР°СЂ РІС–РґСЃСѓС‚РЅС–Р№ РЅР° СЃРєР»Р°РґС–'}, status=409)
 
     cart = _get_cart(request)
     cart_item, created = CartItem.objects.get_or_create(
@@ -429,7 +430,7 @@ def cart_add(request, product_id):
 
     new_quantity = cart_item.quantity + 1
     if new_quantity > product.stock_quantity:
-        return JsonResponse({'error': 'Недостатня кількість товару на складі'}, status=409)
+        return JsonResponse({'error': 'РќРµРґРѕСЃС‚Р°С‚РЅСЏ РєС–Р»СЊРєС–СЃС‚СЊ С‚РѕРІР°СЂСѓ РЅР° СЃРєР»Р°РґС–'}, status=409)
 
     cart_item.quantity = new_quantity
     cart_item.save()
@@ -457,10 +458,10 @@ def cart_update(request, item_id):
     try:
         quantity = int(quantity)
     except ValueError:
-        return JsonResponse({'error': 'Невірна кількість'}, status=400)
+        return JsonResponse({'error': 'РќРµРІС–СЂРЅР° РєС–Р»СЊРєС–СЃС‚СЊ'}, status=400)
 
     if quantity < 0:
-        return JsonResponse({'error': 'Кількість не може бути від’ємною'}, status=400)
+        return JsonResponse({'error': 'РљС–Р»СЊРєС–СЃС‚СЊ РЅРµ РјРѕР¶Рµ Р±СѓС‚Рё РІС–РґвЂ™С”РјРЅРѕСЋ'}, status=400)
 
     if quantity == 0:
         cart_item.delete()
@@ -475,7 +476,7 @@ def cart_update(request, item_id):
         })
 
     if quantity > cart_item.product.stock_quantity:
-        return JsonResponse({'error': 'Недостатня кількість товару на складі'}, status=409)
+        return JsonResponse({'error': 'РќРµРґРѕСЃС‚Р°С‚РЅСЏ РєС–Р»СЊРєС–СЃС‚СЊ С‚РѕРІР°СЂСѓ РЅР° СЃРєР»Р°РґС–'}, status=409)
 
     cart_item.quantity = quantity
     cart_item.save()
@@ -555,20 +556,20 @@ def apply_promo_code(request):
         data = json.loads(request.body)
         code = (data.get('code') or '').strip()
     except (json.JSONDecodeError, AttributeError):
-        return JsonResponse({'error': 'Невірний формат даних'}, status=400)
+        return JsonResponse({'error': 'РќРµРІС–СЂРЅРёР№ С„РѕСЂРјР°С‚ РґР°РЅРёС…'}, status=400)
 
     if not code:
-        return JsonResponse({'error': 'Введіть промокод'}, status=400)
+        return JsonResponse({'error': 'Р’РІРµРґС–С‚СЊ РїСЂРѕРјРѕРєРѕРґ'}, status=400)
 
     promo = PromoCode.objects.filter(code=code).first()
     if not promo:
-        return JsonResponse({'error': 'Промокод не знайдено'}, status=404)
+        return JsonResponse({'error': 'РџСЂРѕРјРѕРєРѕРґ РЅРµ Р·РЅР°Р№РґРµРЅРѕ'}, status=404)
 
     if promo.is_used:
-        return JsonResponse({'error': 'Промокод вже використано'}, status=400)
+        return JsonResponse({'error': 'РџСЂРѕРјРѕРєРѕРґ РІР¶Рµ РІРёРєРѕСЂРёСЃС‚Р°РЅРѕ'}, status=400)
 
     if promo.valid_until <= timezone.now():
-        return JsonResponse({'error': 'Термін дії промокоду закінчився'}, status=400)
+        return JsonResponse({'error': 'РўРµСЂРјС–РЅ РґС–С— РїСЂРѕРјРѕРєРѕРґСѓ Р·Р°РєС–РЅС‡РёРІСЃСЏ'}, status=400)
 
     request.session[_CART_PROMO_SESSION_KEY] = promo.id
 
@@ -633,10 +634,10 @@ def submit_game_score(request):
     try:
         payload = json.loads(request.body.decode('utf-8') or '{}')
     except json.JSONDecodeError:
-        return JsonResponse({'error': 'Некоректний JSON'}, status=400)
+        return JsonResponse({'error': 'РќРµРєРѕСЂРµРєС‚РЅРёР№ JSON'}, status=400)
 
     if not isinstance(payload, dict):
-        return JsonResponse({'error': 'Некоректний JSON'}, status=400)
+        return JsonResponse({'error': 'РќРµРєРѕСЂРµРєС‚РЅРёР№ JSON'}, status=400)
 
     raw_score = payload.get('score', 0)
     client_token = str(payload.get('client_token', '')).strip()
@@ -645,24 +646,24 @@ def submit_game_score(request):
     try:
         score = max(0, int(raw_score))
     except (TypeError, ValueError):
-        return JsonResponse({'error': 'Некоректний рахунок'}, status=400)
+        return JsonResponse({'error': 'РќРµРєРѕСЂРµРєС‚РЅРёР№ СЂР°С…СѓРЅРѕРє'}, status=400)
 
     try:
         duration_ms = int(raw_duration)
     except (TypeError, ValueError):
-        return JsonResponse({'error': 'Некоректна довжина раунду'}, status=400)
+        return JsonResponse({'error': 'РќРµРєРѕСЂРµРєС‚РЅР° РґРѕРІР¶РёРЅР° СЂР°СѓРЅРґСѓ'}, status=400)
 
     if not client_token:
-        return JsonResponse({'error': 'Відсутній client_token'}, status=400)
+        return JsonResponse({'error': 'Р’С–РґСЃСѓС‚РЅС–Р№ client_token'}, status=400)
 
     if duration_ms <= 0 or duration_ms > GAME_DURATION_LIMIT_MS:
-        return JsonResponse({'error': 'Непідходяща довжина раунду'}, status=422)
+        return JsonResponse({'error': 'РќРµРїС–РґС…РѕРґСЏС‰Р° РґРѕРІР¶РёРЅР° СЂР°СѓРЅРґСѓ'}, status=422)
 
     score_limit = _game_score_limit(duration_ms)
     if score > score_limit:
         return JsonResponse(
             {
-                'error': 'Підозрілий результат',
+                'error': 'РџС–РґРѕР·СЂС–Р»РёР№ СЂРµР·СѓР»СЊС‚Р°С‚',
                 'details': {
                     'score_limit': score_limit,
                     'duration_ms': duration_ms,
@@ -673,7 +674,7 @@ def submit_game_score(request):
 
     token_cache_key = f'game-score-token:{client_token}'
     if not cache.add(token_cache_key, request.user.pk, GAME_REPLAY_TOKEN_TTL):
-        return JsonResponse({'error': 'Цей client_token уже використовувався'}, status=409)
+        return JsonResponse({'error': 'Р¦РµР№ client_token СѓР¶Рµ РІРёРєРѕСЂРёСЃС‚РѕРІСѓРІР°РІСЃСЏ'}, status=409)
 
     last_score = (
         GameScore.objects
@@ -686,7 +687,7 @@ def submit_game_score(request):
         elapsed = (timezone.now() - last_score.created_at).total_seconds()
         if elapsed < GAME_RATE_LIMIT_SECONDS:
             cache.delete(token_cache_key)
-            return JsonResponse({'error': 'Занадто часто'}, status=429)
+            return JsonResponse({'error': 'Р—Р°РЅР°РґС‚Рѕ С‡Р°СЃС‚Рѕ'}, status=429)
 
     promo_code_obj = None
     with transaction.atomic():
@@ -722,3 +723,5 @@ class ProductDeleteView(ProductOwnerMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'Product deleted successfully.')
         return super().form_valid(form)
+
+

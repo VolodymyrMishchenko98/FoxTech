@@ -255,7 +255,11 @@
             if (contentType.includes('application/json')) {
                 data = await response.json();
             } else {
-                data = { message: await response.text() };
+                data = {
+                    message: response.redirected && response.url && response.url.includes('/accounts/login')
+                        ? 'Потрібно увійти до акаунта, щоб зберегти результат.'
+                        : 'Сервер повернув неочікувану відповідь. Спробуйте ще раз.',
+                };
             }
 
             if (!response.ok) {
@@ -268,7 +272,8 @@
                 overlayTextEl.textContent = data.message || 'Сервер прийняв рахунок і підготував нагороду.';
             }
             if (rewardEl) {
-                rewardEl.textContent = data.promo_code || data.code || data.reward || 'Записано';
+                const promoCode = data.promo_code || data.code || data.reward;
+                rewardEl.textContent = promoCode ? ('Ваш промокод: ' + promoCode) : 'Промокод не згенеровано';
             }
             if (finalScoreEl) finalScoreEl.textContent = String(data.score ?? payload.score);
             if (statusEl) {
@@ -283,7 +288,7 @@
                     ? 'Запит скасовано, бо ви залишили сторінку.'
                     : (error && error.message ? error.message : 'Спробуйте ще раз пізніше.');
             }
-            if (rewardEl) rewardEl.textContent = 'Без нагороди';
+            if (rewardEl) rewardEl.textContent = 'Промокод не згенеровано';
             if (statusEl && error && error.name !== 'AbortError') {
                 statusEl.textContent = 'Помилка надсилання на сервер.';
             }

@@ -28,7 +28,10 @@ from .models import Cart, CartItem, Category, GameScore, Order, OrderItem, Produ
 
 _CATEGORIES_CACHE_KEY = 'store:all_categories'
 _CATEGORIES_CACHE_TTL = 3600
-GAME_PROMO_THRESHOLD = 150
+GAME_PROMO_MIN_DISCOUNT = 3
+GAME_PROMO_MAX_DISCOUNT = 20
+GAME_PROMO_SCORE_TARGET = 600
+GAME_PROMO_TIME_TARGET_MS = 60000
 GAME_MAX_POINTS_PER_SECOND = 25
 GAME_DURATION_LIMIT_MS = 120000
 GAME_REPLAY_TOKEN_TTL = 86400
@@ -618,19 +621,24 @@ def _generate_unique_promo_code():
             return code
 
 
-def _promo_discount_for_score(score_points):
-    if score_points >= 600:
-        return 25
-    if score_points >= 400:
-        return 20
-    if score_points >= GAME_PROMO_THRESHOLD * 2:
-        return 15
-    return 10
+def _promo_discount_for_score(score_points, duration_ms):
+    score_progress = min(1.0, max(0.0, score_points / GAME_PROMO_SCORE_TARGET))
+    time_progress = min(1.0, max(0.0, duration_ms / GAME_PROMO_TIME_TARGET_MS))
+    progress = max(score_progress, time_progress)
+    discount = GAME_PROMO_MIN_DISCOUNT + int(
+        progress * (GAME_PROMO_MAX_DISCOUNT - GAME_PROMO_MIN_DISCOUNT)
+    )
+    return max(GAME_PROMO_MIN_DISCOUNT, min(GAME_PROMO_MAX_DISCOUNT, discount))
 
 
-@login_required
 @require_POST
 def submit_game_score(request):
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {'error': 'Потрібно увійти до акаунта, щоб зберегти результат.'},
+            status=401,
+        )
+
     try:
         payload = json.loads(request.body.decode('utf-8') or '{}')
     except json.JSONDecodeError:
@@ -689,14 +697,12 @@ def submit_game_score(request):
             cache.delete(token_cache_key)
             return JsonResponse({'error': 'Р—Р°РЅР°РґС‚Рѕ С‡Р°СЃС‚Рѕ'}, status=429)
 
-    promo_code_obj = None
     with transaction.atomic():
-        if score >= GAME_PROMO_THRESHOLD:
-            promo_code_obj = PromoCode.objects.create(
-                code=_generate_unique_promo_code(),
-                discount_percent=_promo_discount_for_score(score),
-                valid_until=timezone.now() + timedelta(days=GAME_PROMO_VALID_DAYS),
-            )
+        promo_code_obj = PromoCode.objects.create(
+            code=_generate_unique_promo_code(),
+            discount_percent=_promo_discount_for_score(score, duration_ms),
+            valid_until=timezone.now() + timedelta(days=GAME_PROMO_VALID_DAYS),
+        )
 
         GameScore.objects.create(
             user=request.user,

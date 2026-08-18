@@ -1,8 +1,11 @@
+import json
+from uuid import uuid4
+
 from django.contrib.auth.models import User
 from django.test import TestCase, TransactionTestCase
 from django.urls import reverse
 
-from .models import Cart, CartItem, Category, Order, Product
+from .models import Cart, CartItem, Category, GameScore, Order, Product, PromoCode
 
 
 class ProductViewTests(TestCase):
@@ -128,4 +131,51 @@ class CheckoutViewTests(TransactionTestCase):
 
         self.assertEqual(second_response.status_code, 409)
         self.assertEqual(Order.objects.count(), 1)
-        self.assertIn('Недостатньо товару', second_response.json()['error'])
+        self.assertIn('РќРµРґРѕСЃС‚Р°С‚РЅСЊРѕ С‚РѕРІР°СЂСѓ', second_response.json()['error'])
+
+
+class GameScoreTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='runner',
+            password='StrongPass123',
+        )
+        self.client.force_login(self.user)
+
+    def _submit_score(self, score, duration_ms):
+        return self.client.post(
+            reverse('store:game_submit_score'),
+            data=json.dumps(
+                {
+                    'score': score,
+                    'client_token': uuid4().hex,
+                    'duration_ms': duration_ms,
+                }
+            ),
+            content_type='application/json',
+            HTTP_ACCEPT='application/json',
+        )
+
+    def test_short_run_gets_minimum_promo_discount(self):
+        response = self._submit_score(score=0, duration_ms=1000)
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['discount_percent'], 3)
+        self.assertIsNotNone(payload['promo_code'])
+        self.assertEqual(GameScore.objects.count(), 1)
+        promo = PromoCode.objects.get(code=payload['promo_code'])
+        self.assertEqual(promo.discount_percent, 3)
+        self.assertIsNotNone(GameScore.objects.get().promo_code_issued)
+
+    def test_long_run_gets_maximum_promo_discount(self):
+        response = self._submit_score(score=600, duration_ms=60000)
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['discount_percent'], 20)
+        self.assertIsNotNone(payload['promo_code'])
+        self.assertEqual(GameScore.objects.count(), 1)
+        promo = PromoCode.objects.get(code=payload['promo_code'])
+        self.assertEqual(promo.discount_percent, 20)
+        self.assertIsNotNone(GameScore.objects.get().promo_code_issued)
